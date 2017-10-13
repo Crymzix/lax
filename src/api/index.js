@@ -34,3 +34,13 @@ export function checkSecret (newSecret) {
     secret: newSecret
   })
 }
+
+export function create (secret, teamName, displayName, email, password) {
+  return axios.post('/api/create', {
+    secret: secret,
+    team_name: teamName,
+    display_name: displayName,
+    email: email,
+    password: password
+  })
+}

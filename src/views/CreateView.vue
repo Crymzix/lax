@@ -10,7 +10,10 @@
       <h1>
         Create a team name
       </h1>
-      <input type="text" placeholder="Team name" class="text_field"></input>
+      <div class="input_container">
+        <input v-model="teamName" type="text" placeholder="Team name" class="text_field"></input>
+        <img v-if="showTeamNameError && teamName ===''" class="icon" src="~../assets/error.png">
+      </div>
       <h1>
         Secret
       </h1>
@@ -25,7 +28,14 @@
       <div class="input_container">
         <input v-model="secret" type="password" placeholder="Database secret" class="secret_field"></input>
         <img v-if="secret !== '' && isSecretValid" class="icon" src="~../assets/success.png">
-        <img v-if="secret !== '' && !isSecretValid" class="icon" src="~../assets/error.png">
+        <img v-if="secret !== '' && !isSecretValid && !testingSecret" class="icon" src="~../assets/error.png">
+        <div v-if="testingSecret" class="load_container">
+          <div class="load">
+              <div class="line"></div>
+              <div class="line"></div>
+              <div class="line"></div>
+          </div>
+        </div>
       </div>
     </div>
     <div id= "create_user_form" class="slide-up-fade-in">
@@ -34,60 +44,116 @@
           Register the first member
         </h1>
         <div class="input_container">
-          <input type="text" placeholder="Email" class="text_field"></input>
-          <img v-if="isEmailValid" class="icon" src="~../assets/success.png">
+          <input v-model="email" type="text" placeholder="Email" class="text_field"></input>
+          <img v-if="email !== '' && isEmailValid" class="icon" src="~../assets/success.png">
+          <img v-if="email !== '' && !isEmailValid" class="icon" src="~../assets/error.png">
+        </div>
+        <div id="display_name" class="input_container">
+          <input v-model="displayName" type="text" placeholder="Display name (no spaces)" class="text_field"></input>
+          <img v-if="showDisplayNameError && displayName !== ''" class="icon" src="~../assets/error.png">
         </div>
         <div id="password"class="input_container">
-          <input type="password" placeholder="Password" class="password_field"></input>
-          <img v-if="isPasswordValid" class="icon" src="~../assets/success.png">
+          <input v-model="password" type="password" placeholder="Password" class="password_field"></input>
+          <img v-if="password !== '' && isPasswordValid" class="icon" src="~../assets/success.png">
+          <img v-if="password !== '' && !isPasswordValid" class="icon" src="~../assets/error.png">
+
         </div>
         <div id="verify_password" class="input_container">
-          <input type="password" placeholder="Verify password" class="password_field"></input>
-          <img v-if="doesPasswordMatch" class="icon" src="~../assets/success.png">
+          <input v-model="verifyPassword" type="password" placeholder="Verify password" class="password_field"></input>
+          <img v-if="verifyPassword !== '' && doesPasswordMatch" class="icon" src="~../assets/success.png">
+          <img v-if="verifyPassword !== '' && !doesPasswordMatch" class="icon" src="~../assets/error.png">
         </div>
       </div>
       <div id="create_right_container" class="create_container">
-        <button v-on:click="initiate" type="button" class="initiate">Initiate</button>
+        <button v-on:click="create" type="button" class="create_button">Create</button>
+        <div id="loading" v-if="loading" class="load_container">
+          <div class="load">
+              <div class="line"></div>
+              <div class="line"></div>
+              <div class="line"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { checkSecret } from '../api'
+import { checkSecret, create } from '../api'
 import debounce from 'debounce'
+
+const re = new RegExp('^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$')
 
 export default {
   name: 'create',
+  data () {
+    return {
+      showTeamNameError: false,
+      isSecretValid: false,
+      isEmailValid: false,
+      showDisplayNameError: false,
+      isPasswordValid: false,
+      doesPasswordMatch: false,
+      teamName: '',
+      secret: '',
+      testingSecret: false,
+      email: '',
+      displayName: '',
+      password: '',
+      verifyPassword: '',
+      loading: false
+    }
+  },
   methods: {
-    initiate: function () {
-      //
+    create: function () {
+      this.loading = true
+      if (this.teamName === '') {
+        this.showTeamNameError = true
+        this.loading = false
+        return
+      }
+      if (this.displayName === '') {
+        this.showDisplayNameError = true
+        this.loading = false
+        return
+      }
+      if (this.isSecretValid && this.isEmailValid && this.isPasswordValid && this.doesPasswordMatch) {
+        create(this.secret, this.teamName, this.displayName, this.email, this.password)
+      } else {
+        this.loading = false
+      }
     },
     checkSecret: debounce(
       function (secret) {
         var that = this
+        this.testingSecret = true
         checkSecret(secret)
           .then(function (response) {
             that.isSecretValid = response.data.match
+            that.testingSecret = false
           })
           .catch(function (error) {
+            that.testingSecret = false
             console.log(error)
           })
       },
     500)
   },
   watch: {
+    email: function (email) {
+      this.isEmailValid = re.test(email)
+    },
+    displayName: function (displayName) {
+      this.displayName = displayName.replace(/ /g, '')
+    },
+    password: function (password) {
+      this.isPasswordValid = password.length >= 8
+    },
+    verifyPassword: function (verifyPassword) {
+      this.doesPasswordMatch = this.password === verifyPassword
+    },
     secret: function (newSecret) {
       this.checkSecret(newSecret)
-    }
-  },
-  data () {
-    return {
-      isSecretValid: false,
-      isEmailValid: false,
-      isPasswordValid: false,
-      doesPasswordMatch: false,
-      secret: ''
     }
   }
 }
@@ -95,40 +161,48 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.initiate {
+.create_button {
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
   font-size: 16px;
-  border-radius: 5px;
+  border-radius: 15px;
   outline: none;
   border: none;
   background: #25ad88;
   width: 100px;
   height: 50px;
-  position: absolute;
-  top: 45%;
-  left: 60%;
   color: white;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 135px;
   cursor: pointer;
-  -o-transition:color .2s ease-out, background 1s ease-in;
-  -ms-transition:color .2s ease-out, background 1s ease-in;
-  -moz-transition:color .2s ease-out, background 1s ease-in;
-  -webkit-transition:color .2s ease-out, background 1s ease-in;
-  transition:color .2s ease-out, background 1s ease-in;
+  display: block;
+  -o-transition:color .2s ease-out, background .2s ease-in;
+  -ms-transition:color .2s ease-out, background .2s ease-in;
+  -moz-transition:color .2s ease-out, background .2s ease-in;
+  -webkit-transition:color .2s ease-out, background .2s ease-in;
+  transition:color .2s ease-out, background .2s ease-in;
 }
 
-.initiate:hover {
+.create_button:hover {
   background: #178b6b;
 }
 
-#create_right_container {
-  display: flex;
-  height: auto;
-  width: auto;
+#loading {
+  margin-top: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
 .create_container {
   display: inline-block;
+  width: 300px;
+}
+
+#create_right_container {
+  height: auto;
+  width: 300px;
 }
 
 .input_container {
@@ -165,6 +239,10 @@ export default {
   margin: 35px 20px;
 }
 
+#display_name {
+  margin-top: 10px;
+}
+
 #password {
   margin-top: 50px;
 }
@@ -191,6 +269,7 @@ export default {
   width: 600px;
   margin-left: 36vw;
   margin-top: 30vh;
+  display: flex;
 }
 
 .background_container {
@@ -250,6 +329,33 @@ p {
   font-family: 'Roboto', sans-serif;
 }
 
+/*Loading icon*/
+.line {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 7px;
+    background-color: #25ad88;
+}
+
+.load_container {
+    display: inline-block;
+    width: auto;
+    height: auto;
+    text-align: center;
+}
+
+.load .line:nth-last-child(1) {animation: loading .6s .1s linear infinite;}
+.load .line:nth-last-child(2) {animation: loading .6s .2s linear infinite;}
+.load .line:nth-last-child(3) {animation: loading .6s .3s linear infinite;}
+
+@keyframes loading {
+    0 {transform: translate(0,0);}
+    50% {transform: translate(0,-3.5px);}
+    100% {transform: translate(0,0);}
+}
+
+/*Animations for the form.*/
 .slide-up-fade-in {
   animation: slide-up-fade-in ease 1s;
   animation-iteration-count: 1;

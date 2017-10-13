@@ -1,7 +1,7 @@
 var express = require('express');
 var path = require('path');
 var serveStatic = require('serve-static');
-var bootstrap = require('./bootstrap');
+var bootstrap = require('./firebase');
 var bodyParser = require("body-parser");
 var api = require('./api');
 

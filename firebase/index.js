@@ -3,8 +3,8 @@
 var admin =  require('firebase-admin');
 var request = require('request');
 
-var serviceAccount = require('./serviceAccountKey.json');
-var databaseUrl = require('./src/config.json').databaseURL;
+var serviceAccount = require('../serviceAccountKey.json');
+var databaseUrl = require('../src/config.json').databaseURL;
 
 if (serviceAccount !== null && databaseUrl !== null) {
   admin.initializeApp({
@@ -14,6 +14,11 @@ if (serviceAccount !== null && databaseUrl !== null) {
 }
 
 var database = admin.database();
+module.exports.database = database;
+
+var auth = admin.auth();
+module.exports.auth = auth;
+
 database.ref('configured')
   .once('value')
   .then(function (snapshot) {
@@ -34,7 +39,7 @@ database.ref('configured')
     console.log(err)
   });
 
-// Sets the security rules for the 'configured' field for public access,
+// Sets the security rules for the 'configured' field to public,
 // as the client facing application needs to query this field to determine what
 // page to show on first run.
 function setConfigFlagRules() {
