@@ -2,8 +2,11 @@
   <div class="create">
     <div class="background_container">
       <div class="left_container">
+        <div class="left_container_left_diagonal"></div>
+        <div class="left_container_right_diagonal"></div>
         </div><div class="right_container">
-
+          <div class="left_diagonal"></div>
+          <div class="right_diagonal"></div>
         </div>
     </div>
     <div id="team_form" class="slide-up-fade-in">
@@ -65,8 +68,8 @@
         </div>
       </div>
       <div id="create_right_container" class="create_container">
-        <button v-on:click="create" type="button" class="create_button">Create</button>
-        <div id="loading" v-if="loading" class="load_container">
+        <button v-on:click="create" type="button" class="create_button" v-bind:class="{ inactive: state === 'initializing' || state === 'initialized' }" >{{ createButtonText }}</button>
+        <div id="loading" v-if="state === 'initializing'" class="load_container">
           <div class="load">
               <div class="line"></div>
               <div class="line"></div>
@@ -79,7 +82,7 @@
 </template>
 
 <script>
-import { checkSecret, create } from '../api'
+import { checkSecret } from '../api'
 import debounce from 'debounce'
 
 const re = new RegExp('^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$')
@@ -101,26 +104,36 @@ export default {
       displayName: '',
       password: '',
       verifyPassword: '',
-      loading: false
+      state: 'uninitialized'
     }
   },
   methods: {
     create: function () {
-      this.loading = true
+      this.state = 'initializing'
       if (this.teamName === '') {
         this.showTeamNameError = true
-        this.loading = false
+        this.state = 'uninitialized'
         return
       }
       if (this.displayName === '') {
         this.showDisplayNameError = true
-        this.loading = false
+        this.state = 'uninitialized'
         return
       }
       if (this.isSecretValid && this.isEmailValid && this.isPasswordValid && this.doesPasswordMatch) {
-        create(this.secret, this.teamName, this.displayName, this.email, this.password)
+        this.$store.dispatch('CREATE_TEAM', {
+          secret: this.secret,
+          teamName: this.teamName,
+          displayName: this.displayName,
+          email: this.email,
+          password: this.password }).then(() => {
+            this.state = 'initialized'
+            setTimeout(() => {
+              this.$router.push({ path: '/login' })
+            }, 1000)
+          })
       } else {
-        this.loading = false
+        this.state = 'uninitialized'
       }
     },
     checkSecret: debounce(
@@ -128,11 +141,11 @@ export default {
         var that = this
         this.testingSecret = true
         checkSecret(secret)
-          .then(function (response) {
+          .then((response) => {
             that.isSecretValid = response.data.match
             that.testingSecret = false
           })
-          .catch(function (error) {
+          .catch((error) => {
             that.testingSecret = false
             console.log(error)
           })
@@ -148,12 +161,24 @@ export default {
     },
     password: function (password) {
       this.isPasswordValid = password.length >= 8
+      this.doesPasswordMatch = this.verifyPassword === password
     },
     verifyPassword: function (verifyPassword) {
       this.doesPasswordMatch = this.password === verifyPassword
     },
     secret: function (newSecret) {
       this.checkSecret(newSecret)
+    }
+  },
+  computed: {
+    createButtonText: function () {
+      if (this.state === 'uninitialized') {
+        return 'Create'
+      } else if (this.state === 'initializing') {
+        return 'Creating'
+      } else if (this.state === 'initialized') {
+        return 'Created'
+      }
     }
   }
 }
@@ -186,6 +211,11 @@ export default {
 
 .create_button:hover {
   background: #178b6b;
+}
+
+.create_button.inactive {
+  background: #178b6b;
+  pointer-events: none;
 }
 
 #loading {
@@ -284,7 +314,22 @@ export default {
   *display: inline;
   height: 100vh;
   width: 30vw;
-  background-image: linear-gradient(0deg, #247BFF, #FF6105);
+  background-image: linear-gradient(0deg, #24d1ff 45%, #FF6105);
+}
+
+.left_container_right_diagonal {
+  z-index: 0;
+  height: 100vh;
+  width: 30vw;
+  background: linear-gradient(-55deg, #086BFF 60%, transparent 60%);
+}
+
+.left_container_left_diagonal {
+  z-index: 1;
+  height: 100vh;
+  width: 30vw;
+  position: absolute;
+  background: linear-gradient(50deg, #0352c7 30%, transparent 30%);
 }
 
 .right_container {
@@ -292,7 +337,23 @@ export default {
   *display: inline;
   height: 100vh;
   width: 70vw;
-  background: #086BFF;
+  background: #FF6105;
+  background-image: linear-gradient(0deg, #24d1ff 45%, #FF6105);
+}
+
+.left_diagonal {
+  position: absolute;
+  z-index: 1;
+  height: 100vh;
+  width: 70vw;
+  background: linear-gradient(45deg, #086BFF 50%, transparent 50%);
+}
+
+.right_diagonal {
+  z-index: 0;
+  height: 100vh;
+  width: 70vw;
+  background: linear-gradient(-35deg, #247BFF 50%, transparent 50%);
 }
 
 h1 {

@@ -1,3 +1,8 @@
+import { create } from '../api'
+
 export default {
-  // actions
+  CREATE_TEAM: ({ commit }, { secret, teamName, displayName, email, password }) => {
+    return create(secret, teamName, displayName, email, password)
+      .then(() => commit('SET_CONFIGURED'))
+  }
 }

@@ -12,24 +12,54 @@ export default new Router({
   routes: [
     {
       path: '/',
-      beforeEnter: checkState,
+      beforeEnter: checkMainState,
       component: MainView
     },
     {
       path: '/login',
+      beforeEnter: checkLoginState,
       component: LoginView
     },
     {
       path: '/create',
+      beforeEnter: checkCreateState,
       component: CreateView
     }
   ]
 })
 
-function checkState (to, from, next) {
+function checkMainState (to, from, next) {
   if (store.state.hasFirebaseConfigured) {
-    next()
+    if (store.state.isLoggedIn) {
+      next()
+    } else {
+      next('login')
+    }
   } else {
     next('/create')
+  }
+}
+
+function checkLoginState (to, from, next) {
+  if (store.state.hasFirebaseConfigured) {
+    if (store.state.isLoggedIn) {
+      next('/')
+    } else {
+      next()
+    }
+  } else {
+    next('/create')
+  }
+}
+
+function checkCreateState (to, from, next) {
+  if (store.state.hasFirebaseConfigured) {
+    if (store.state.isLoggedIn) {
+      next('/')
+    } else {
+      next('/login')
+    }
+  } else {
+    next()
   }
 }

@@ -9,15 +9,16 @@ import { initializeFirebase } from './api'
 Vue.config.productionTip = false
 
 initializeFirebase(store)
-
-// Create the app instance.
-// Here we inject the router, store and ssr context to all child components,
-// making them available everywhere as `this.$router` and `this.$store`.
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  store,
-  template: '<App/>',
-  components: { App }
-})
+  .then(() => {
+    // Create the app instance.
+    // Here we inject the router, store and ssr context to all child components,
+    // making them available everywhere as `this.$router` and `this.$store`.
+    /* eslint-disable no-new */
+    new Vue({
+      el: '#app',
+      router,
+      store,
+      template: '<App/>',
+      components: { App }
+    })
+  })
