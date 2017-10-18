@@ -55,11 +55,10 @@
           <input v-model="displayName" type="text" placeholder="Display name (no spaces)" class="text_field"></input>
           <img v-if="showDisplayNameError && displayName !== ''" class="icon" src="~../assets/error.png">
         </div>
-        <div id="password"class="input_container">
+        <div id="password" class="input_container">
           <input v-model="password" type="password" placeholder="Password" class="password_field"></input>
           <img v-if="password !== '' && isPasswordValid" class="icon" src="~../assets/success.png">
           <img v-if="password !== '' && !isPasswordValid" class="icon" src="~../assets/error.png">
-
         </div>
         <div id="verify_password" class="input_container">
           <input v-model="verifyPassword" type="password" placeholder="Verify password" class="password_field"></input>

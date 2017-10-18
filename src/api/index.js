@@ -4,15 +4,23 @@ import axios from 'axios'
 const config = require('../config.json')
 
 let database
+let auth
 
 export function initializeFirebase (store) {
   console.log('Initializing Firebase...')
   var firebase = Firebase.initializeApp(config)
   database = firebase.database()
+  auth = firebase.auth()
   return checkConfiguration(store)
 }
 
 function checkConfiguration (store) {
+  var databaseConfigured = checkDatabaseConfigured(store)
+  var loggedIn = checkLoggedIn(store)
+  return Promise.all([databaseConfigured, loggedIn])
+}
+
+function checkDatabaseConfigured (store) {
   return database.ref('configured')
     .once('value')
     .then(function (snapshot) {
@@ -22,9 +30,19 @@ function checkConfiguration (store) {
         store.state.hasFirebaseConfigured = isConfigured
       }
     })
-    .catch(function (err) {
-      console.log(err)
+}
+
+function checkLoggedIn (store) {
+  return new Promise((resolve, reject) => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        store.state.isLoggedIn = true
+      } else {
+        store.state.isLoggedIn = false
+      }
+      resolve()
     })
+  })
 }
 
 export function checkSecret (newSecret) {
@@ -41,4 +59,8 @@ export function create (secret, teamName, displayName, email, password) {
     email: email,
     password: password
   })
+}
+
+export function login (email, password) {
+  return auth.signInWithEmailAndPassword(email, password)
 }
