@@ -16,6 +16,7 @@
     "axios": "^0.16.2",
     "body-parser": "^1.18.2",
     "debounce": "^1.0.2",
+    "express": "^4.16.2",
     "firebase": "^4.4.0",
     "firebase-admin": "^5.4.1",
     "request": "^2.83.0",
