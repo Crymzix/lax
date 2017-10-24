@@ -18,16 +18,18 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       var userObject = userRecord.toJSON();
       var user = {
         email: userObject.email,
-        emailVerified: userObject.emailVerified,
-        displayName: userObject.displayName,
-        disabled: userObject.disabled
+        email_verified: userObject.emailVerified,
+        display_name: userObject.displayName,
+        disabled: userObject.disabled,
+        is_admin: true,
+        last_viewed_channel_id: ""
       };
 
       // Creating default messages to be put in default channels
       var firstGeneralMessage = {
         user_id: "lax_bot",
         name: "lax",
-        photoUrl: null,
+        photo_url: null,
         message: "This is the general channel! Generally speaking...",
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
@@ -36,7 +38,7 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       var firstRandomMessage = {
         user_id: "lax_bot",
         name: "lax",
-        photoUrl: null,
+        photo_url: null,
         message: "Welcome to the random channel! Let's get weird",
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
@@ -53,6 +55,7 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
       var generalChannelKey = database.ref('channels').push().key;
+      user.last_viewed_channel_id = generalChannelKey;
 
       var randomChannel = {
         name: "random",
@@ -77,6 +80,7 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       update['/members/' + generalChannelKey + '/' + userObject.uid] = true;
       update['/members/' + randomChannelKey + '/' + userObject.uid] = true;
       update['/configured/'] = true;
+      update['/team_name/'] = teamName;
       database.ref().update(update)
         .then(function() {
           resolve();

@@ -11,7 +11,10 @@ export default new Vuex.Store({
     hasFirebaseConfigured: false,
     hasElasticSearch: false,
     isLoggedIn: false,
-    name: '',
+    userId: '',
+    displayName: '',
+    lastViewedChannelId: '',
+    teamName: '',
     users: { /* [id: string]: User */ },
     channels: { /* [id: string]: Channel */ }
   },

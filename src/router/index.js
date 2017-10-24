@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import store from '../store'
 
-import MainView from '../views/MainView.vue'
+import MessageView from '../views/MessageView.vue'
 import LoginView from '../views/LoginView.vue'
 import CreateView from '../views/CreateView.vue'
 
@@ -11,9 +11,9 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/',
-      beforeEnter: checkMainState,
-      component: MainView
+      path: '/messages',
+      beforeEnter: checkMessageState,
+      component: MessageView
     },
     {
       path: '/login',
@@ -24,16 +24,20 @@ export default new Router({
       path: '/create',
       beforeEnter: checkCreateState,
       component: CreateView
+    },
+    {
+      path: '/',
+      redirect: '/messages'
     }
   ]
 })
 
-function checkMainState (to, from, next) {
+function checkMessageState (to, from, next) {
   if (store.state.hasFirebaseConfigured) {
     if (store.state.isLoggedIn) {
       next()
     } else {
-      next('login')
+      next('/login')
     }
   } else {
     next('/create')

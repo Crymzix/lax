@@ -8,7 +8,7 @@
 import SideMenu from '../components/SideMenu.vue'
 
 export default {
-  name: 'main',
+  name: 'messages',
   components: { 'sidemenu': SideMenu },
 
   data () {
@@ -21,8 +21,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+#main {
+  position: fixed;
+}
+
 .sidemenu {
-  width: 35vh;
+  width: 325px;
   height: 100vh;
 }
 

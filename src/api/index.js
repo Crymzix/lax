@@ -37,10 +37,15 @@ function checkLoggedIn (store) {
     auth.onAuthStateChanged((user) => {
       if (user) {
         store.state.isLoggedIn = true
+        store.state.userId = user.uid
+        fetchUser(user.uid, store)
+          .then(() => {
+            resolve()
+          })
       } else {
         store.state.isLoggedIn = false
+        resolve()
       }
-      resolve()
     })
   })
 }
@@ -63,4 +68,23 @@ export function create (secret, teamName, displayName, email, password) {
 
 export function login (email, password) {
   return auth.signInWithEmailAndPassword(email, password)
+}
+
+export function fetchUser (userId, store) {
+  return database.ref('/users/' + userId)
+    .once('value')
+    .then(function (snapshot) {
+      var exists = (snapshot.val() !== null)
+      if (exists) {
+        store.state.lastViewedChannelId = snapshot.val().last_viewed_channel_id
+      }
+    })
+}
+
+export function fetchChannels (userId) {
+  return database.ref('/users_channels/' + userId)
+    .once('value')
+    .then(function (snapshot) {
+      return snapshot
+    })
 }
