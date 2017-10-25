@@ -38,7 +38,9 @@ function checkLoggedIn (store) {
       if (user) {
         store.state.isLoggedIn = true
         store.state.userId = user.uid
-        fetchUser(user.uid, store)
+        var userPromise = fetchUser(user.uid, store)
+        var teamPromise = fetchTeam(store)
+        Promise.all([userPromise, teamPromise])
           .then(() => {
             resolve()
           })
@@ -76,13 +78,32 @@ export function fetchUser (userId, store) {
     .then(function (snapshot) {
       var exists = (snapshot.val() !== null)
       if (exists) {
-        store.state.lastViewedChannelId = snapshot.val().last_viewed_channel_id
+        store.state.user = snapshot.val()
+      }
+    })
+}
+
+export function fetchTeam (store) {
+  return database.ref('team')
+    .once('value')
+    .then(function (snapshot) {
+      var exists = (snapshot.val() !== null)
+      if (exists) {
+        store.state.team = snapshot.val()
       }
     })
 }
 
 export function fetchChannels (userId) {
-  return database.ref('/users_channels/' + userId)
+  return database.ref('/user_channels/' + userId)
+    .once('value')
+    .then(function (snapshot) {
+      return snapshot
+    })
+}
+
+export function fetchUsers () {
+  return database.ref('users')
     .once('value')
     .then(function (snapshot) {
       return snapshot

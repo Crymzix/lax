@@ -12,9 +12,8 @@ export default new Vuex.Store({
     hasElasticSearch: false,
     isLoggedIn: false,
     userId: '',
-    displayName: '',
-    lastViewedChannelId: '',
-    teamName: '',
+    user: null,
+    team: null,
     users: { /* [id: string]: User */ },
     channels: { /* [id: string]: Channel */ }
   },

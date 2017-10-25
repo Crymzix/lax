@@ -15,5 +15,13 @@ export default {
         Vue.set(state.channels, channel.key, channelValue)
       }
     })
+  },
+  SET_USERS: (state, { users }) => {
+    users.forEach(user => {
+      var userValue = user.val()
+      if (userValue) {
+        Vue.set(state.users, user.key, userValue)
+      }
+    })
   }
 }

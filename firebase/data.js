@@ -22,7 +22,9 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         display_name: userObject.displayName,
         disabled: userObject.disabled,
         is_admin: true,
-        last_viewed_channel_id: ""
+        last_viewed_channel_id: "",
+        online: false,
+        status: 'online'
       };
 
       // Creating default messages to be put in default channels
@@ -68,6 +70,12 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       };
       var randomChannelKey = database.ref('channels').push().key;
 
+      var team = {
+        team_name: teamName,
+        member_count: 1,
+        channel_count: 2
+      };
+
       // Bulk-update
       var update = {};
       update['/messages/' + generalChannelKey + '/' + firstGeneralMessageKey] = firstGeneralMessage;
@@ -75,12 +83,12 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       update['/channels/' + generalChannelKey] = generalChannel;
       update['/channels/' + randomChannelKey] = randomChannel;
       update['/users/' + userObject.uid] = user;
-      update['/users_channels/' + userObject.uid + '/'+ generalChannelKey] = generalChannel;
-      update['/users_channels/' + userObject.uid + '/' + randomChannelKey] = randomChannel;
+      update['/user_channels/' + userObject.uid + '/'+ generalChannelKey] = generalChannel;
+      update['/user_channels/' + userObject.uid + '/' + randomChannelKey] = randomChannel;
       update['/members/' + generalChannelKey + '/' + userObject.uid] = true;
       update['/members/' + randomChannelKey + '/' + userObject.uid] = true;
+      update['/team/'] = team;
       update['/configured/'] = true;
-      update['/team_name/'] = teamName;
       database.ref().update(update)
         .then(function() {
           resolve();

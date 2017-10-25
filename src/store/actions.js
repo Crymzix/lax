@@ -1,7 +1,8 @@
 import {
   create,
   login,
-  fetchChannels
+  fetchChannels,
+  fetchUsers
 } from '../api'
 
 export default {
@@ -16,5 +17,9 @@ export default {
   FETCH_CHANNELS: ({ commit, state }) => {
     return fetchChannels(state.userId)
       .then(channels => commit('SET_CHANNELS', { channels }))
+  },
+  FETCH_USERS: ({ commit, state }) => {
+    return fetchUsers()
+      .then(users => commit('SET_USERS', {users}))
   }
 }
