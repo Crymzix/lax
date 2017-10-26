@@ -10,7 +10,7 @@
     <h3>channels</h3>
     <ul class="channel_list">
       <li v-for="channel in channels" class="channel_item">
-        <div>
+        <div v-on:click="selectChannel(channel)" class="channel_item_container" v-bind:class="{ active: channel.id === currentChannelId }">
           # {{ channel.name }}
           <div class="message_indicator">1</div>
         </div>
@@ -19,7 +19,9 @@
     <h3>members</h3>
     <ul class="user_list">
       <li v-for="user in users" class="user_item">
-        @ {{ user.display_name }}
+        <div class="user_item_container">
+          @ {{ user.display_name }}
+        </div>
       </li>
     </ul>
   </div>
@@ -47,6 +49,18 @@ export default {
     },
     fetchUsers: function () {
       this.$store.dispatch('FETCH_USERS')
+    },
+    selectChannel: function (channel) {
+      if (this.currentChannelId !== channel.id) {
+        this.currentChannelId = channel.id
+        this.$store.commit('SET_CHANNEL', {
+          channelId: this.currentChannelId
+        })
+        this.$store.dispatch('SET_CURRENT_CHANNEL', {
+          channelId: channel.id
+        })
+        this.$emit('changedChannelId')
+      }
     }
   }
 }
@@ -77,15 +91,15 @@ export default {
   display: inline-block;
 }
 
-.channel_list {
+.channel_list, .user_list {
   margin-top: 15px;
+  padding: 0px;
 }
 
 .channel_item, .user_item {
   font-family: 'Roboto', sans-serif;
   color: white;
   margin-bottom: 10px;
-  margin-left: -10px;
   list-style-type: none;
 }
 
@@ -98,7 +112,23 @@ export default {
   background-color: #bf120c;
   text-align: center;
   border-radius: 8px;
+  margin-top: 2px;
   visibility: hidden;
+}
+
+.channel_item_container, .user_item_container {
+  padding-left: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.channel_item_container:hover, .user_item_container:hover {
+  background: linear-gradient(90deg, transparent, #082e65, transparent);
+}
+
+.channel_item_container.active, .user_item_container.active {
+  background: linear-gradient(90deg, #ff6105, #ff7e08);
 }
 
 h1 {

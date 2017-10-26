@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <sidemenu class="sidemenu"></sidemenu>
+    <sidemenu v-on:changedChannelId="changeChannelId" class="sidemenu"></sidemenu>
     <div class="right_container">
       <messagelist class="message_list" :channel-id="currentChannelId"></messagelist>
       <composer class="composer"></composer>
@@ -33,6 +33,10 @@ export default {
       this.$store.dispatch('FETCH_MESSAGES', {
         channelId: this.currentChannelId
       })
+    },
+    changeChannelId: function () {
+      this.currentChannelId = this.$store.state.user.last_viewed_channel_id
+      this.fetchMessages()
     }
   }
 }

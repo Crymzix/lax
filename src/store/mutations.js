@@ -12,6 +12,7 @@ export default {
     channels.forEach(channel => {
       var channelValue = channel.val()
       if (channelValue) {
+        channelValue.id = channel.key
         Vue.set(state.channels, channel.key, channelValue)
       }
     })
@@ -38,5 +39,8 @@ export default {
   },
   SET_MESSAGE: (state, { channelId, message }) => {
     Vue.set(state.messages[channelId], message.id, message)
+  },
+  SET_CHANNEL: (state, { channelId }) => {
+    Vue.set(state.user, 'last_viewed_channel_id', channelId)
   }
 }

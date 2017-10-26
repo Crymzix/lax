@@ -4,7 +4,8 @@ import {
   fetchChannels,
   fetchUsers,
   fetchMessages,
-  sendMessage
+  sendMessage,
+  setCurrentChannelId
 } from '../api'
 
 export default {
@@ -28,10 +29,14 @@ export default {
     return fetchMessages(channelId)
       .then(messages => commit('SET_MESSAGES', { channelId, messages }))
   },
-  SEND_MESSAGE: ({commit, state}, { messageInput }) => {
+  SEND_MESSAGE: ({ commit, state }, { messageInput }) => {
     var user = state.user
     var channelId = user.last_viewed_channel_id
     return sendMessage(user, state.userId, channelId, messageInput)
       .then(message => commit('SET_MESSAGE', { channelId, message }))
+  },
+  SET_CURRENT_CHANNEL: ({ commit, state }, { channelId }) => {
+    return setCurrentChannelId(state.userId, channelId)
+      .then(() => commit('SET_CHANNEL', { channelId }))
   }
 }

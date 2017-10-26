@@ -141,3 +141,9 @@ export function sendMessage (user, userId, channelId, messageInput) {
       return message
     })
 }
+
+export function setCurrentChannelId (userId, channelId) {
+  var update = {}
+  update['/users/' + userId + '/last_viewed_channel_id'] = channelId
+  return database.ref().update(update)
+}

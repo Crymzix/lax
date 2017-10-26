@@ -21,14 +21,6 @@ export default {
       messages: this.$store.state.messages[this.channelId]
     }
   },
-  watch: {
-    messages: {
-      handler: function () {
-        console.log('changed')
-      }
-    },
-    deep: true
-  },
   computed: {
     sortedMessages: function () {
       var sortedMessages = []
