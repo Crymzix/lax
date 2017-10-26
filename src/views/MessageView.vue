@@ -2,7 +2,7 @@
   <div class="main">
     <sidemenu class="sidemenu"></sidemenu>
     <div class="right_container">
-      <messagelist class="message_list"></messagelist>
+      <messagelist class="message_list" :channel-id="currentChannelId"></messagelist>
       <composer class="composer"></composer>
     </div>
   </div>
@@ -22,11 +22,18 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to the main view.'
+      currentChannelId: this.$store.state.user.last_viewed_channel_id
     }
   },
   mounted () {
-    //
+    this.fetchMessages()
+  },
+  methods: {
+    fetchMessages: function () {
+      this.$store.dispatch('FETCH_MESSAGES', {
+        channelId: this.currentChannelId
+      })
+    }
   }
 }
 </script>

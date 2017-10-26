@@ -15,7 +15,8 @@ export default new Vuex.Store({
     user: null,
     team: null,
     users: { /* [id: string]: User */ },
-    channels: { /* [id: string]: Channel */ }
+    channels: { /* [id: string]: Channel */ },
+    messages: { /* [Channel id: Object with message ids as keys and message objects as values] */ }
   },
   actions,
   mutations,

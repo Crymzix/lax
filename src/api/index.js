@@ -109,3 +109,35 @@ export function fetchUsers () {
       return snapshot
     })
 }
+
+export function fetchMessages (channelId) {
+  return database.ref('/messages/' + channelId)
+    .once('value')
+    .then(function (snapshot) {
+      return snapshot
+    })
+}
+
+export function sendMessage (user, userId, channelId, messageInput) {
+  var message = {
+    user_id: userId,
+    name: user.display_name,
+    message: messageInput,
+    timestamp: Firebase.database.ServerValue.TIMESTAMP
+  }
+  if (user.photo_url) {
+    message.photo_url = user.photo_url
+  }
+  var messageKey = database.ref('messages').push().key
+  var update = {}
+  update['/messages/' + channelId + '/' + messageKey] = message
+  return database.ref().update(update)
+    .then(function () {
+      message.id = messageKey
+      // artificially set the timestamp property as Firebase.database.ServerValue.TIMESTAMP
+      // doesn't actually set the timestamp (it merely acts as an indicator to tell the
+      // database to use the server time when writing).
+      message.timestamp = Date.now()
+      return message
+    })
+}

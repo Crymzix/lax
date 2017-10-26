@@ -23,5 +23,20 @@ export default {
         Vue.set(state.users, user.key, userValue)
       }
     })
+  },
+  SET_MESSAGES: (state, { channelId, messages }) => {
+    if (!state.messages.hasOwnProperty(channelId)) {
+      Vue.set(state.messages, channelId, {})
+    }
+    messages.forEach(message => {
+      var messageValue = message.val()
+      messageValue.id = message.key
+      if (messageValue) {
+        Vue.set(state.messages[channelId], messageValue.id, messageValue)
+      }
+    })
+  },
+  SET_MESSAGE: (state, { channelId, message }) => {
+    Vue.set(state.messages[channelId], message.id, message)
   }
 }

@@ -2,7 +2,9 @@ import {
   create,
   login,
   fetchChannels,
-  fetchUsers
+  fetchUsers,
+  fetchMessages,
+  sendMessage
 } from '../api'
 
 export default {
@@ -21,5 +23,15 @@ export default {
   FETCH_USERS: ({ commit, state }) => {
     return fetchUsers()
       .then(users => commit('SET_USERS', {users}))
+  },
+  FETCH_MESSAGES: ({ commit, state }, { channelId }) => {
+    return fetchMessages(channelId)
+      .then(messages => commit('SET_MESSAGES', { channelId, messages }))
+  },
+  SEND_MESSAGE: ({commit, state}, { messageInput }) => {
+    var user = state.user
+    var channelId = user.last_viewed_channel_id
+    return sendMessage(user, state.userId, channelId, messageInput)
+      .then(message => commit('SET_MESSAGE', { channelId, message }))
   }
 }
