@@ -3,7 +3,7 @@
 var admin =  require('firebase-admin');
 var request = require('request');
 
-var serviceAccount = require('../serviceAccountKey.json');
+var serviceAccount = require('../server-config.json');
 var databaseUrl = require('../src/config.json').databaseURL;
 
 if (serviceAccount !== null && databaseUrl !== null) {

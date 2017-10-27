@@ -1,0 +1,41 @@
+doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd"
+head
+  meta(content='text/html; charset=utf-8', http-equiv='Content-Type')
+  style(type="text/css"): include mail.css
+  body(style='padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; margin: 0; -ms-text-size-adjust: 100%;', marginheight='0', marginwidth='0')
+    center
+      table(cellpadding='8', cellspacing='0', style='*width: 540px; padding: 0; width: 100% !important; background: #ffffff; margin: 0; background-color: #ffffff;', border='0')
+        tr
+          td(valign='top')
+            table(cellpadding='0', cellspacing='0', style='box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.15); border-radius: 5px; -webkit-border-radius: 5px; border: 1px solid #003a99; -moz-border-radius: 5px;', border='0', align='center')
+              tr
+                td(colspan='3', height='6')
+              tr
+                td
+                  table(cellpadding='0', cellspacing='0', style='line-height: 25px;', border='0', align='center')
+                    tr
+                      td(colspan='3', height='30')
+                    tr
+                      td(width='36')
+                      td(width='454', align='left', style='color: #444444; border-collapse: collapse; font-size: 11pt; font-family: proxima_nova, \'Open Sans\', \'Lucida Grande\', \'Segoe UI\', Arial, Verdana, \'Lucida Sans Unicode\', Tahoma, \'Sans Serif\'; max-width: 454px;', valign='top')
+                        p Hello #{name}!
+                        p
+                          | We would like to welcome you as our newest member to our Lax workspace!
+                        p
+                          | Please verify your account to start instantly communicating with your pals!
+                        p   - The Lax team
+                      td(width='36')
+                    tr
+                      td(colspan='3', height='15')
+              tr
+                td(width='100%', align='center', height='100')
+                  a.link(href='#{verificationLink}') Verify
+            table(cellpadding='0', cellspacing='0', align='center', border='0')
+              tr
+                td(height='10')
+              tr
+                td(style='padding: 0; border-collapse: collapse;')
+                  table(cellpadding='0', cellspacing='0', align='center', border='0')
+                    tr(style='color: #c0c0c0; font-size: 11px; font-family: proxima_nova, \'Open Sans\', \'Lucida Grande\', \'Segoe UI\', Arial, Verdana, \'Lucida Sans Unicode\', Tahoma, \'Sans Serif\'; -webkit-text-size-adjust: none;')
+                      td(width='400', align='left')
+                      td(width='128', align='right') © #{moment().format('YYYY')} Lax

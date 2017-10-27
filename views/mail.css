@@ -1,0 +1,34 @@
+@font-face {
+  font-family: "proxima_nova";
+  src: url("//skeleton-fonts.s3-website-us-west-2.amazonaws.com/proxima-nova-regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+a.link {
+  font-size: 16px;
+  border-radius: 15px;
+  outline: none;
+  border: none;
+  background: #25ad88;
+  width: 120px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  color: white;
+  height: auto;
+  margin-bottom: 36px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  -o-transition:color .2s ease-out, background .2s ease-in;
+  -ms-transition:color .2s ease-out, background .2s ease-in;
+  -moz-transition:color .2s ease-out, background .2s ease-in;
+  -webkit-transition:color .2s ease-out, background .2s ease-in;
+  transition:color .2s ease-out, background .2s ease-in;
+}
+
+a.link:hover {
+  background: #178b6b;
+}

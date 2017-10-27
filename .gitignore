@@ -11,5 +11,5 @@ test/unit/coverage
 *.ntvs*
 *.njsproj
 *.sln
-serviceAccountKey.json
+server-config.json
 src/config.json

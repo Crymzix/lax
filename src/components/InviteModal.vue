@@ -22,7 +22,8 @@
 </template>
 
 <script>
-// import { sendInvites } from '../api'
+import { sendInvites } from '../api'
+
 const re = new RegExp('^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$')
 
 export default {
@@ -75,6 +76,13 @@ export default {
         this.errorMessage = 'Please input at least one valid email.'
         return
       }
+      sendInvites(this.invites)
+        .then(() => {
+          console.log('Success')
+        })
+        .catch((error) => {
+          console.log(error.message)
+        })
     }
   }
 }

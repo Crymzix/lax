@@ -1,9 +1,11 @@
 var firebase = require('firebase')
 var firebaseModule = require('../firebase');
+var mailer = require('../api/mailer');
+var crypto = require('crypto');
 var database = firebaseModule.database;
 var auth = firebaseModule.auth;
 
-module.exports.sendInvites = function(invites) {
+module.exports.sendInvites = function(req, res, invites) {
   // create Promises for each email where we create the user, and then
   // send an verification email to each user.
   var inviteTasks = [];
@@ -12,14 +14,81 @@ module.exports.sendInvites = function(invites) {
     user.email = invite.email;
     if (user.name) {
       user.displayName = user.name;
+    } else {
+      user.displayName = '';
     }
+    user.emailVerified = true; // set to true as a formality since we use our own verification logic
+
     var inviteTask = auth.createUser(user)
       .then(function(userRecord) {
-        // TODO
+        // Create user meta-data
+        var userObject = userRecord.toJSON();
+        var user = {
+          email: userObject.email,
+          email_verified: false,
+          display_name: userObject.displayName,
+          disabled: userObject.disabled,
+          is_admin: false,
+          last_viewed_channel_id: "",
+          online: false,
+          status: 'offline',
+          timestamp: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        // Create data for verification
+        var verification = {
+          user_id: userObject.uid,
+          expiration: Date.now() + 86400000 // 24 hour expiration
+        };
+
+        return createVerificationToken(userObject.uid, user, verification);
+      })
+      .then(function(result) {
+        var update = {};
+        update['/users/' + result.userId] = result.user;
+        update['/verifications/' + result.token] = result.verification;
+        return database.ref().update(update)
+          .then(function() {
+            return result;
+          });
+      })
+      .then(function(result) {
+
+        var email = result.user.email;
+        var name;
+        if (result.user.display_name) {
+          name = result.user.display_name;
+        } else {
+          name = '';
+        }
+        var link = 'http://' + req.headers.host + '/verify/' + result.token;
+        return mailer.sendVerificationEmail(res, email, name, link);
       })
       .catch(function(error) {
         console.log(error.message);
       });
+    inviteTasks.push(inviteTask);
+  });
+
+  return Promise.all(inviteTasks);
+}
+
+function createVerificationToken(userId, user, verification) {
+  return new Promise(function(resolve, reject) {
+    crypto.randomBytes(48, function(err, buffer) {
+      if (err) {
+        reject(err);
+      } else {
+        var token = buffer.toString('hex');
+        var result = {
+          userId: userId,
+          user: user,
+          verification: verification,
+          token: token
+        };
+        resolve(result);
+      }
+    });
   });
 }
 
@@ -48,7 +117,7 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         is_admin: true,
         last_viewed_channel_id: "",
         online: false,
-        status: 'online',
+        status: 'offline',
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
 

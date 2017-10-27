@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var serviceAccount = require('../serviceAccountKey.json');
+var serverConfig = require('../server-config.json');
 var data = require('../firebase/data');
 
 const isEmpty = function (str) {
@@ -14,7 +14,7 @@ const re = new RegExp('^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[
 router.post('/test_secret', function(req, res, next) {
   var secret = req.body.secret;
   res.json({
-    match: secret === serviceAccount.secret
+    match: secret === serverConfig.secret
   });
 });
 
@@ -25,7 +25,7 @@ router.post('/create', function(req, res, next) {
   var email = req.body.email;
   var password = req.body.password;
 
-  if (secret === serviceAccount.secret) {
+  if (secret === serverConfig.secret) {
     if (isEmpty(teamName)) {
       res.status(400).send('Missing team name');
       return;
@@ -92,7 +92,7 @@ router.post('/send_invites', function(req, res, next) {
 
   data.verifyToken(token)
     .then(function() {
-      data.sendInvites(invites)
+      data.sendInvites(req, res, invites)
         .then(function() {
           res.status(200).send('Success');
         })
@@ -101,8 +101,9 @@ router.post('/send_invites', function(req, res, next) {
         });
     })
     .catch(function(error) {
+      console.log(error.message);
       res.status(401).send('Token error');
     });
-})
+});
 
 module.exports = router;
