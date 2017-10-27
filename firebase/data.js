@@ -4,7 +4,23 @@ var database = firebaseModule.database;
 var auth = firebaseModule.auth;
 
 module.exports.sendInvites = function(invites) {
-  //
+  // create Promises for each email where we create the user, and then
+  // send an verification email to each user.
+  var inviteTasks = [];
+  invites.forEach(function(invite) {
+    var user = {};
+    user.email = invite.email;
+    if (user.name) {
+      user.displayName = user.name;
+    }
+    var inviteTask = auth.createUser(user)
+      .then(function(userRecord) {
+        // TODO
+      })
+      .catch(function(error) {
+        console.log(error.message);
+      });
+  });
 }
 
 module.exports.verifyToken = function(token) {
@@ -32,7 +48,8 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         is_admin: true,
         last_viewed_channel_id: "",
         online: false,
-        status: 'online'
+        status: 'online',
+        timestamp: firebase.database.ServerValue.TIMESTAMP
       };
 
       // Creating default messages to be put in default channels

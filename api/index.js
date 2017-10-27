@@ -77,22 +77,28 @@ router.post('/send_invites', function(req, res, next) {
     res.status(400).send('Missing "invites" parameter');
     return;
   } else {
-    var hasEmail = false;
-    invites.forEach(function(invite) {
-      if (!isEmpty(invite.email)) {
-        hasEmail = true;
-        return;
-      }
+    // filter invites for any empty email fields and invalid emails,
+    // check if resulting invites contain at least 1 valid email.
+    invites = invites.filter(function(invite) {
+      return invite.email !== null && invite.email !== ''
+        && re.test(invite.email);
     });
-    if (!hasEmail) {
-      res.status(400).send('Need at least one email.');
+
+    if (invites.length < 1) {
+      res.status(400).send('Need at least one valid email.');
       return;
     }
   }
 
   data.verifyToken(token)
     .then(function() {
-      res.status(200).send('Success');
+      data.sendInvites(invites)
+        .then(function() {
+          res.status(200).send('Success');
+        })
+        .catch(function(error) {
+          res.status(500).send(error.message);
+        });
     })
     .catch(function(error) {
       res.status(401).send('Token error');

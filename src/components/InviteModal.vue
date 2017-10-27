@@ -23,6 +23,7 @@
 
 <script>
 // import { sendInvites } from '../api'
+const re = new RegExp('^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$')
 
 export default {
   name: 'invite',
@@ -60,15 +61,18 @@ export default {
     },
     invite: function () {
       this.errorMessage = ''
-      var hasEmail = false
-      this.invites.forEach((invite) => {
-        if (invite.email !== '') {
-          hasEmail = true
-          return
-        }
+      this.invites = this.invites.filter((invite) => {
+        return invite.email !== null && invite.email !== '' && re.test(invite.email)
       })
-      if (!hasEmail) {
-        this.errorMessage = 'Please input at least one email.'
+      if (this.invites.length < 1) {
+        // reset the invites.
+        for (var i = 0; i < 3; i++) {
+          this.invites.push({
+            email: '',
+            name: ''
+          })
+        }
+        this.errorMessage = 'Please input at least one valid email.'
         return
       }
     }
