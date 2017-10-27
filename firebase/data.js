@@ -3,6 +3,14 @@ var firebaseModule = require('../firebase');
 var database = firebaseModule.database;
 var auth = firebaseModule.auth;
 
+module.exports.sendInvites = function(invites) {
+  //
+}
+
+module.exports.verifyToken = function(token) {
+  return auth.verifyIdToken(token);
+}
+
 module.exports.createTeam = function(teamName, displayName, email, password) {
   return new Promise(function(resolve, reject) {
     // Create the first user.

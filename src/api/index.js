@@ -68,6 +68,16 @@ export function create (secret, teamName, displayName, email, password) {
   })
 }
 
+export function sendInvites (invites) {
+  return auth.currentUser.getIdToken(true)
+    .then((token) => {
+      return axios.post('/api/send_invites', {
+        token: token,
+        invites: invites
+      })
+    })
+}
+
 export function login (email, password) {
   return auth.signInWithEmailAndPassword(email, password)
 }

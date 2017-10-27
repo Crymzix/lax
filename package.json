@@ -13,6 +13,7 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs"
   },
   "dependencies": {
+    "anchorme": "^1.1.2",
     "axios": "^0.16.2",
     "body-parser": "^1.18.2",
     "debounce": "^1.0.2",

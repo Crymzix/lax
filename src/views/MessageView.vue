@@ -1,6 +1,7 @@
 <template>
   <div class="main">
-    <sidemenu v-on:changedChannelId="changeChannelId" class="sidemenu"></sidemenu>
+    <invitemodal v-if="shouldShowInviteModal" v-on:closeInviteModal="showInviteModal(false)"></invitemodal>
+    <sidemenu v-on:changedChannelId="changeChannelId" v-on:showInviteModal="showInviteModal(true)" class="sidemenu"></sidemenu>
     <div class="right_container">
       <messagelist class="message_list" :channel-id="currentChannelId"></messagelist>
       <composer class="composer"></composer>
@@ -12,17 +13,20 @@
 import SideMenu from '../components/SideMenu.vue'
 import MessageList from '../components/MessageList.vue'
 import Composer from '../components/Composer.vue'
+import InviteModal from '../components/InviteModal.vue'
 
 export default {
   name: 'messages',
   components: {
     'sidemenu': SideMenu,
     'messagelist': MessageList,
-    'composer': Composer
+    'composer': Composer,
+    'invitemodal': InviteModal
   },
   data () {
     return {
-      currentChannelId: this.$store.state.user.last_viewed_channel_id
+      currentChannelId: this.$store.state.user.last_viewed_channel_id,
+      shouldShowInviteModal: false
     }
   },
   mounted () {
@@ -37,7 +41,11 @@ export default {
     changeChannelId: function () {
       this.currentChannelId = this.$store.state.user.last_viewed_channel_id
       this.fetchMessages()
+    },
+    showInviteModal: function (shouldShow) {
+      this.shouldShowInviteModal = shouldShow
     }
+
   }
 }
 </script>

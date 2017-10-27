@@ -8,13 +8,14 @@
         <h1 class="username">{{ message.name }}</h1>
         <span class="timestamp">{{ timestamp }}</span>
       </div>
-      <p class="message">{{ message.message }}</p>
+      <p class="message" v-html="formattedMessage"></p>
     </div>
   </div>
 </template>
 
 <script>
 import { timeAgo } from '../utils/filters'
+import anchorMe from 'anchorme'
 
 export default {
   name: 'message',
@@ -27,6 +28,16 @@ export default {
   computed: {
     timestamp: function () {
       return timeAgo(this.message.timestamp) + ' ago'
+    },
+    formattedMessage: function () {
+      return anchorMe(this.message.message, {
+        attributes: [
+          {
+            name: 'target',
+            value: 'blank'
+          }
+        ]
+      })
     }
   }
 }

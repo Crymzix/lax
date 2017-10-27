@@ -64,4 +64,39 @@ router.post('/create', function(req, res, next) {
   }
 });
 
+router.post('/send_invites', function(req, res, next) {
+  var token = req.body.token;
+  var invites = req.body.invites;
+
+  if (isEmpty(token)) {
+    res.status(400).send('Missing token');
+    return;
+  }
+
+  if (!invites) {
+    res.status(400).send('Missing "invites" parameter');
+    return;
+  } else {
+    var hasEmail = false;
+    invites.forEach(function(invite) {
+      if (!isEmpty(invite.email)) {
+        hasEmail = true;
+        return;
+      }
+    });
+    if (!hasEmail) {
+      res.status(400).send('Need at least one email.');
+      return;
+    }
+  }
+
+  data.verifyToken(token)
+    .then(function() {
+      res.status(200).send('Success');
+    })
+    .catch(function(error) {
+      res.status(401).send('Token error');
+    });
+})
+
 module.exports = router;

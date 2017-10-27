@@ -7,7 +7,10 @@
         <h1>{{ user.display_name }}</h1>
       </div>
     </div>
-    <h3>channels</h3>
+    <div>
+      <h3 class="heading">channels</h3>
+      <img class="add_icon" v-on:click="addChannel" src="~../assets/plus.png"/>
+    </div>
     <ul class="channel_list">
       <li v-for="channel in channels" class="channel_item">
         <div v-on:click="selectChannel(channel)" class="channel_item_container" v-bind:class="{ active: channel.id === currentChannelId }">
@@ -16,7 +19,10 @@
         </div>
       </li>
     </ul>
-    <h3>members</h3>
+    <div>
+      <h3 class="heading">members</h3>
+      <img class="add_icon" v-on:click="addMembers" src="~../assets/plus.png"/>
+    </div>
     <ul class="user_list">
       <li v-for="user in users" class="user_item">
         <div class="user_item_container">
@@ -24,6 +30,7 @@
         </div>
       </li>
     </ul>
+    <div class="invite_heading" v-on:click="showInviteModal">+ Invite</div>
   </div>
 </template>
 
@@ -61,6 +68,15 @@ export default {
         })
         this.$emit('changedChannelId')
       }
+    },
+    addChannel: function () {
+      //
+    },
+    addMembers: function () {
+      //
+    },
+    showInviteModal: function () {
+      this.$emit('showInviteModal')
     }
   }
 }
@@ -94,6 +110,7 @@ export default {
 .channel_list, .user_list {
   margin-top: 15px;
   padding: 0px;
+  margin-bottom: 0px;
 }
 
 .channel_item, .user_item {
@@ -129,6 +146,39 @@ export default {
 
 .channel_item_container.active, .user_item_container.active {
   background: linear-gradient(90deg, #ff6105, #ff7e08);
+}
+
+.heading {
+  display: inline-block;
+}
+
+.add_icon {
+  float: right;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-top: 54px;
+  margin-right: 10px;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.add_icon:hover {
+  opacity: 1.0;
+}
+
+.invite_heading {
+  margin-top: 65px;
+  margin-left: 15px;
+  color: #c4e7f4;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.invite_heading:hover {
+  text-decoration: underline;
 }
 
 h1 {
