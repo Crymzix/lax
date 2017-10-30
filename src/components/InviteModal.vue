@@ -11,7 +11,7 @@
             <img v-if="invites.length !== 1" class="remove_invite_icon" src="~../assets/close_small.png" v-on:click="removeInvite(index)"/>
           </div>
           <p class="add_another" v-on:click="addInvite">+ Add another member</p>
-          <button class="send_button" v-on:click="invite">
+          <button class="send_button" v-bind:class="{ inactive: loading }" v-on:click="invite">
             Send Invites
           </button>
           <p id="error_message">{{ errorMessage }}</p>
@@ -44,6 +44,7 @@ export default {
           name: ''
         }
       ],
+      loading: false,
       errorMessage: ''
     }
   },
@@ -76,12 +77,15 @@ export default {
         this.errorMessage = 'Please input at least one valid email.'
         return
       }
+      this.loading = true
       sendInvites(this.invites)
         .then(() => {
-          console.log('Success')
+          this.loading = false
+          this.closeInviteModal()
         })
         .catch((error) => {
-          console.log(error.message)
+          this.loading = false
+          this.errorMessage = error.message
         })
     }
   }

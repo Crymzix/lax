@@ -5,6 +5,7 @@ import store from '../store'
 import MessageView from '../views/MessageView.vue'
 import LoginView from '../views/LoginView.vue'
 import CreateView from '../views/CreateView.vue'
+import VerifyView from '../views/VerifyView.vue'
 
 Vue.use(Router)
 
@@ -24,6 +25,10 @@ export default new Router({
       path: '/create',
       beforeEnter: checkCreateState,
       component: CreateView
+    },
+    {
+      path: '/verify/:token',
+      component: VerifyView
     },
     {
       path: '/',

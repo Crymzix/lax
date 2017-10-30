@@ -9,8 +9,7 @@ const isEmpty = function (str) {
 
 const re = new RegExp('^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$')
 
-// Public facing API to handle client to server communication for sensitive
-// data. Primarily used in the initial workspace creation process.
+// Public facing API to handle client to server communication for sensitive data.
 router.post('/test_secret', function(req, res, next) {
   var secret = req.body.secret;
   res.json({
@@ -103,6 +102,25 @@ router.post('/send_invites', function(req, res, next) {
     .catch(function(error) {
       console.log(error.message);
       res.status(401).send('Token error');
+    });
+});
+
+router.post('/verify_email_token', function(req, res, next) {
+  var token = req.body.token;
+  if (isEmpty(token)) {
+    res.status(400).send('Missing token');
+    return;
+  }
+  data.verifyEmailToken(req, res, token)
+    .then(function(val) {
+      if (val === 1) { // verified
+        res.status(200).send('Success');
+      } else if (val === 2) { // expired, data resent.
+        res.status(200).send('Expired');
+      }
+    })
+    .catch(function(error) {
+      res.status(500).send(error.message);
     });
 });
 

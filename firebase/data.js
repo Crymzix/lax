@@ -5,6 +5,76 @@ var crypto = require('crypto');
 var database = firebaseModule.database;
 var auth = firebaseModule.auth;
 
+module.exports.verifyEmailToken = function(req, res, token) {
+  return new Promise(function(resolve, reject) {
+    database.ref('/verifications/' + token)
+      .once('value')
+      .then(function (snapshot) {
+        var exists = (snapshot.val() !== null);
+        if (exists) {
+          return snapshot.val();
+        } else {
+          reject(new Error('Invalid verification token'));
+        }
+      })
+      .then(function(verificationData) {
+        var isExpired = Date.now() > verificationData.expiration;
+        var update = {};
+        if (isExpired) {
+          // delete item in verification endpoint, create new verification data
+          // and resend the verification email.
+          update['/verifications/' + token] = null;
+          var verification = {
+            user_id: verificationData.user_id,
+            expiration: Date.now() + 86400000, // 24 hour expiration
+            email: verificationData.email,
+            display_name: verificationData.display_name
+          };
+
+          createVerificationToken(null, null, verification)
+            .then(function(result) {
+              update['/verifications/' + result.token] = result.verification;
+              database.ref().update(update)
+                .then(function() {
+                  var email = result.verification.email;
+                  var name;
+                  if (result.verification.display_name) {
+                    name = result.verification.display_name;
+                  } else {
+                    name = '';
+                  }
+                  var link = 'http://' + req.headers.host + '/verify/' + result.token;
+                  return mailer.sendVerificationEmail(res, email, name, link);
+                })
+                .then(function() {
+                  resolve(2);
+                })
+                .catch(function (err) {
+                  reject(err);
+                })
+            })
+            .catch(function (err) {
+              reject(err);
+            });
+        } else {
+          // update user detail, and delete item in verification endpoint.
+          update['/users/' + verification.user_id + '/email_verified'] = true;
+          update['/verifications/' + token] = null;
+          database.ref().update(update)
+            .then(function() {
+              resolve(1);
+            })
+            .catch(function (err) {
+              reject(err);
+            })
+        }
+      })
+      .catch(function (err) {
+        reject(err);
+      });
+  });
+}
+
 module.exports.sendInvites = function(req, res, invites) {
   // create Promises for each email where we create the user, and then
   // send an verification email to each user.
@@ -38,7 +108,9 @@ module.exports.sendInvites = function(req, res, invites) {
         // Create data for verification
         var verification = {
           user_id: userObject.uid,
-          expiration: Date.now() + 86400000 // 24 hour expiration
+          expiration: Date.now() + 86400000, // 24 hour expiration
+          email: userObject.email,
+          display_name: userObject.displayName
         };
 
         return createVerificationToken(userObject.uid, user, verification);
@@ -53,7 +125,6 @@ module.exports.sendInvites = function(req, res, invites) {
           });
       })
       .then(function(result) {
-
         var email = result.user.email;
         var name;
         if (result.user.display_name) {

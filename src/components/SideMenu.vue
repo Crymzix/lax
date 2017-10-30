@@ -25,7 +25,7 @@
     </div>
     <ul class="user_list">
       <li v-for="user in users" class="user_item">
-        <div class="user_item_container">
+        <div v-if="user.email_verified" class="user_item_container">
           @ {{ user.display_name }}
         </div>
       </li>

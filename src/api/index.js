@@ -68,6 +68,12 @@ export function create (secret, teamName, displayName, email, password) {
   })
 }
 
+export function verifyEmailToken (token) {
+  return axios.post('/api/verify_email_token', {
+    token: token
+  })
+}
+
 export function sendInvites (invites) {
   return auth.currentUser.getIdToken(true)
     .then((token) => {
