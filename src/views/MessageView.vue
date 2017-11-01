@@ -15,7 +15,8 @@ import MessageList from '../components/MessageList.vue'
 import Composer from '../components/Composer.vue'
 import InviteModal from '../components/InviteModal.vue'
 import {
-  presenceListener
+  presenceListener,
+  watchMessages
 } from '../api'
 
 export default {
@@ -38,10 +39,22 @@ export default {
       this.$store.commit('SET_ONLINE')
     })
   },
+  beforeDestroy () {
+    watchMessages(false)
+  },
   methods: {
     fetchMessages: function () {
       this.$store.dispatch('FETCH_MESSAGES', {
         channelId: this.currentChannelId
+      })
+      .then(() => {
+        watchMessages(false) // unwatch previous, if any.
+        watchMessages(true, this.currentChannelId, (message) => {
+          this.$store.commit('SET_MESSAGE', {
+            channelId: this.currentChannelId,
+            message: message
+          })
+        })
       })
     },
     changeChannelId: function () {
@@ -51,7 +64,6 @@ export default {
     showInviteModal: function (shouldShow) {
       this.shouldShowInviteModal = shouldShow
     }
-
   }
 }
 </script>

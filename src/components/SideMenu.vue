@@ -58,7 +58,7 @@ export default {
     this.fetchChannels()
     this.fetchUsers()
       .then(() => {
-        watchUsers(true, user => {
+        watchUsers(true, (user) => {
           this.$store.commit('SET_USER', {
             user: user
           })

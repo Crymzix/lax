@@ -184,6 +184,25 @@ export function fetchMessages (channelId) {
     })
 }
 
+export function watchMessages (watch, channelId, cb) {
+  const addRef = database.ref('/messages/' + channelId)
+    .orderByChild('timestamp')
+    .startAt(new Date().getTime())
+  const changeRef = database.ref('/messages/' + channelId)
+  const handler = snapshot => {
+    var message = snapshot.val()
+    message.id = message.key
+    cb(message)
+  }
+  if (watch) {
+    addRef.on('child_added', handler)
+    changeRef.on('child_changed', handler)
+  } else {
+    addRef.off()
+    changeRef.off()
+  }
+}
+
 export function sendMessage (user, userId, channelId, messageInput) {
   var message = {
     user_id: userId,
