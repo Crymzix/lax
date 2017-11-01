@@ -47,10 +47,33 @@ function setConfigFlagRules() {
   request.put(url, {
           json: {
             "rules": {
-              ".read": "auth != null",
-              ".write": "auth != null",
               "configured": {
                 ".read": true
+              },
+              "channels": {
+                ".read": true,
+                "$channel_id": {
+                  ".read" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null"
+                }
+              },
+              "messages": {
+                "$channel_id" : {
+                  ".read" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null",
+                  ".write" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null",
+                  "$message_id" : {
+                    ".read" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null"
+                  }
+                }
+              },
+              "users": {
+                ".read": true,
+                "$uid": {
+                  ".read": true,
+                  ".write": "$uid === auth.uid"
+                }
+              },
+              "team": {
+              	".read":true
               }
             }
           }

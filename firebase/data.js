@@ -44,18 +44,32 @@ module.exports.setAccount = function(token, displayName, password) {
         }
       })
       .then(function(userId) {
-        // delete verification item, and set user data.
         auth.updateUser(userId, {
           displayName: displayName,
           password: password
         })
         .then(function(userRecord) {
-          return userId;
+          // Get team info to 'bootstrap' the user
+          return database.ref('team')
+            .once('value')
+            .then(function(snapshot) {
+              var exists = (snapshot.val() !== null);
+              if (exists) {
+                return snapshot.val();
+              } else {
+                reject(new Error('Team not found.'));
+              }
+            })
         })
-        .then(function(userId) {
+        .then(function(team) {
+          // delete verification item, and set initial user data.
           var update = {};
           update['/verifications/' + token] = null;
           update['/users/' + userId + '/display_name/'] = displayName;
+          update['/users/' + userId + '/last_viewed_channel_id/'] = team.general_channel_id;
+          update['/members/' + team.general_channel_id + '/' + userId] = true;
+          update['/members/' + team.random_channel_id + '/' + userId] = true;
+          update['/team/member_count/' ] = team.count++;
           database.ref().update(update)
             .then(function() {
               resolve();
@@ -339,8 +353,8 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       update['/channels/' + generalChannelKey] = generalChannel;
       update['/channels/' + randomChannelKey] = randomChannel;
       update['/users/' + userObject.uid] = user;
-      update['/user_channels/' + userObject.uid + '/'+ generalChannelKey] = generalChannel;
-      update['/user_channels/' + userObject.uid + '/' + randomChannelKey] = randomChannel;
+      //update['/user_channels/' + userObject.uid + '/'+ generalChannelKey] = generalChannel;
+      //update['/user_channels/' + userObject.uid + '/' + randomChannelKey] = randomChannel;
       update['/members/' + generalChannelKey + '/' + userObject.uid] = true;
       update['/members/' + randomChannelKey + '/' + userObject.uid] = true;
       update['/team/'] = team;

@@ -26,7 +26,7 @@
     <ul class="user_list">
       <li v-for="user in users" class="user_item">
         <div v-if="user.email_verified" class="user_item_container">
-          @ {{ user.display_name }}
+          @ {{ username(user) }}
         </div>
       </li>
     </ul>
@@ -77,6 +77,13 @@ export default {
     },
     showInviteModal: function () {
       this.$emit('showInviteModal')
+    },
+    username: function (user) {
+      if (user.display_name && user.display_name !== '') {
+        return user.display_name
+      } else {
+        return user.email.substring(0, user.email.lastIndexOf('@'))
+      }
     }
   }
 }
@@ -138,6 +145,10 @@ export default {
   border-radius: 8px;
   cursor: pointer;
   pointer-events: all;
+}
+
+.user_item_container.inactive {
+  font-style: italic;
 }
 
 .channel_item_container:hover, .user_item_container:hover {
