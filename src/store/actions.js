@@ -18,7 +18,7 @@ export default {
       .then(() => commit('SET_LOGIN'))
   },
   FETCH_CHANNELS: ({ commit, state }) => {
-    return fetchChannels(state.userId)
+    return fetchChannels()
       .then(channels => commit('SET_CHANNELS', { channels }))
   },
   FETCH_USERS: ({ commit, state }) => {

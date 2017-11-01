@@ -111,13 +111,59 @@ router.post('/verify_email_token', function(req, res, next) {
     res.status(400).send('Missing token');
     return;
   }
-  data.verifyEmailToken(req, res, token)
+  data.verifyEmailToken(token)
     .then(function(val) {
       if (val === 1) { // verified
         res.status(200).send('Success');
       } else if (val === 2) { // expired, data resent.
         res.status(200).send('Expired');
       }
+    })
+    .catch(function(error) {
+      res.status(500).send(error.message);
+    });
+});
+
+router.post('/resend_verification', function(req, res, next) {
+  var token = req.body.token;
+  if (isEmpty(token)) {
+    res.status(400).send('Missing token');
+    return;
+  }
+  data.resendVerificationToken(req, res, token)
+    .then(function() {
+      res.status(200).send('Resent verification email.');
+    })
+    .catch(function(error) {
+      res.status(500).send(error.message);
+    });
+});
+
+router.post('/set_account', function(req, res, next) {
+  var token = req.body.token;
+  var displayName = req.body.display_name;
+  var password = req.body.password;
+  if (isEmpty(token)) {
+    res.status(400).send('Missing token');
+    return;
+  }
+
+  if (isEmpty(displayName)) {
+    res.status(400).send('Display name is missing.');
+    return;
+  }
+
+  if (isEmpty(password)) {
+    res.status(400).send('Password is missing');
+    return;
+  } else if (password.length < 8) {
+    res.status(400).send('Incorrect password length');
+    return;
+  }
+
+  data.setAccount(token, displayName, password)
+    .then(function() {
+      res.status(200).send('Success');
     })
     .catch(function(error) {
       res.status(500).send(error.message);

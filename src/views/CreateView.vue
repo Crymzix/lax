@@ -1,13 +1,6 @@
 <template>
   <div class="create">
     <div class="background_container">
-      <div class="left_container">
-        <div class="left_container_left_diagonal"></div>
-        <div class="left_container_right_diagonal"></div>
-        </div><div class="right_container">
-          <div class="left_diagonal"></div>
-          <div class="right_diagonal"></div>
-        </div>
     </div>
     <div id="team_form" class="slide-up-fade-in">
       <h1>
@@ -303,56 +296,10 @@ export default {
 
 .background_container {
   position: fixed;
-  height: 100%;
-  width: 100%;
-  white-space: nowrap;
-}
-
-.left_container {
-  display: inline-block;
-  *display: inline;
+  width: 100vw;
   height: 100vh;
-  width: 30vw;
-  background-image: linear-gradient(0deg, #24d1ff 45%, #FF6105);
-}
-
-.left_container_right_diagonal {
-  z-index: 0;
-  height: 100vh;
-  width: 30vw;
-  background: linear-gradient(-55deg, #086BFF 60%, transparent 60%);
-}
-
-.left_container_left_diagonal {
-  z-index: 1;
-  height: 100vh;
-  width: 30vw;
-  position: absolute;
-  background: linear-gradient(50deg, #0352c7 30%, transparent 30%);
-}
-
-.right_container {
-  display: inline-block;
-  *display: inline;
-  height: 100vh;
-  width: 70vw;
-  background: #FF6105;
-  background-image: linear-gradient(0deg, #24d1ff 45%, #FF6105);
-}
-
-.left_diagonal {
-  position: absolute;
-  z-index: 1;
-  height: 100vh;
-  width: 70vw;
-  background: linear-gradient(45deg, #086BFF 50%, transparent 50%);
-}
-
-.right_diagonal {
-  z-index: 0;
-  height: 100vh;
-  width: 70vw;
-  background: linear-gradient(-35deg, #247BFF 50%, transparent 50%);
+  background: url('../assets/background.svg');
+  background-size: cover;
 }
 
 h1 {

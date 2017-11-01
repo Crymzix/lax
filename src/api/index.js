@@ -74,6 +74,20 @@ export function verifyEmailToken (token) {
   })
 }
 
+export function resendVerificationEmail (token) {
+  return axios.post('/api/resend_verification', {
+    token: token
+  })
+}
+
+export function setAccount (token, displayName, password) {
+  return axios.post('/api/set_account', {
+    token: token,
+    display_name: displayName,
+    password: password
+  })
+}
+
 export function sendInvites (invites) {
   return auth.currentUser.getIdToken(true)
     .then((token) => {
@@ -110,8 +124,8 @@ export function fetchTeam (store) {
     })
 }
 
-export function fetchChannels (userId) {
-  return database.ref('/user_channels/' + userId)
+export function fetchChannels () {
+  return database.ref('/channels/')
     .once('value')
     .then(function (snapshot) {
       return snapshot

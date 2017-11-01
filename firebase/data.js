@@ -5,7 +5,131 @@ var crypto = require('crypto');
 var database = firebaseModule.database;
 var auth = firebaseModule.auth;
 
-module.exports.verifyEmailToken = function(req, res, token) {
+module.exports.setAccount = function(token, displayName, password) {
+  return new Promise(function(resolve, reject) {
+    database.ref('/verifications/' + token)
+      .once('value')
+      .then(function(snapshot) {
+        var exists = (snapshot.val() !== null);
+        if (exists) {
+          return snapshot.val();
+        } else {
+          reject(new Error('Invalid verification token'));
+        }
+      })
+      .then(function(verificationData) {
+        var isExpired = Date.now() > verificationData.expiration;
+        if (isExpired) {
+          reject(new Error('Token expired'));
+        } else {
+          // retrieve user.
+          return database.ref('/users/' + verificationData.user_id)
+            .once('value')
+            .then(function(snapshot) {
+              var exists = (snapshot.val() !== null);
+              if (exists) {
+                var user = snapshot.val();
+                if (user.email_verified) {
+                  return snapshot.key;
+                } else {
+                  reject(new Error('Email has not been verified'));
+                }
+              } else {
+                reject(new Error('User does not exist'));
+              }
+            })
+            .catch(function(error) {
+              reject(error);
+            })
+        }
+      })
+      .then(function(userId) {
+        // delete verification item, and set user data.
+        auth.updateUser(userId, {
+          displayName: displayName,
+          password: password
+        })
+        .then(function(userRecord) {
+          return userId;
+        })
+        .then(function(userId) {
+          var update = {};
+          update['/verifications/' + token] = null;
+          update['/users/' + userId + '/display_name/'] = displayName;
+          database.ref().update(update)
+            .then(function() {
+              resolve();
+            })
+            .catch(function(error) {
+              reject(error)
+            });
+        })
+        .catch(function(error) {
+          reject(error);
+        });
+      })
+      .catch(function(error) {
+        reject(error);
+      });
+  });
+}
+
+module.exports.resendVerificationToken = function(req, res, token) {
+  return new Promise(function(resolve, reject) {
+    database.ref('/verifications/' + token)
+      .once('value')
+      .then(function (snapshot) {
+        var exists = (snapshot.val() !== null);
+        if (exists) {
+          return snapshot.val();
+        } else {
+          reject(new Error('Invalid verification token'));
+        }
+      })
+      .then(function(verificationData) {
+        // delete item in verification endpoint, create new verification data
+        // and resend the verification email.
+        update['/verifications/' + token] = null;
+        var verification = {
+          user_id: verificationData.user_id,
+          expiration: Date.now() + 86400000, // 24 hour expiration
+          email: verificationData.email,
+          display_name: verificationData.display_name
+        };
+
+        createVerificationToken(null, null, verification)
+          .then(function(result) {
+            update['/verifications/' + result.token] = result.verification;
+            database.ref().update(update)
+              .then(function() {
+                var email = result.verification.email;
+                var name;
+                if (result.verification.display_name) {
+                  name = result.verification.display_name;
+                } else {
+                  name = '';
+                }
+                var link = 'http://' + req.headers.host + '/verify/' + result.token;
+                return mailer.sendVerificationEmail(res, email, name, link);
+              })
+              .then(function() {
+                resolve();
+              })
+              .catch(function (err) {
+                reject(err);
+              })
+          })
+          .catch(function (err) {
+            reject(err);
+          });
+      })
+      .catch(function (err) {
+        reject(err);
+      });
+  });
+}
+
+module.exports.verifyEmailToken = function(token) {
   return new Promise(function(resolve, reject) {
     database.ref('/verifications/' + token)
       .once('value')
@@ -19,47 +143,12 @@ module.exports.verifyEmailToken = function(req, res, token) {
       })
       .then(function(verificationData) {
         var isExpired = Date.now() > verificationData.expiration;
-        var update = {};
         if (isExpired) {
-          // delete item in verification endpoint, create new verification data
-          // and resend the verification email.
-          update['/verifications/' + token] = null;
-          var verification = {
-            user_id: verificationData.user_id,
-            expiration: Date.now() + 86400000, // 24 hour expiration
-            email: verificationData.email,
-            display_name: verificationData.display_name
-          };
-
-          createVerificationToken(null, null, verification)
-            .then(function(result) {
-              update['/verifications/' + result.token] = result.verification;
-              database.ref().update(update)
-                .then(function() {
-                  var email = result.verification.email;
-                  var name;
-                  if (result.verification.display_name) {
-                    name = result.verification.display_name;
-                  } else {
-                    name = '';
-                  }
-                  var link = 'http://' + req.headers.host + '/verify/' + result.token;
-                  return mailer.sendVerificationEmail(res, email, name, link);
-                })
-                .then(function() {
-                  resolve(2);
-                })
-                .catch(function (err) {
-                  reject(err);
-                })
-            })
-            .catch(function (err) {
-              reject(err);
-            });
+          resolve(2);
         } else {
-          // update user detail, and delete item in verification endpoint.
-          update['/users/' + verification.user_id + '/email_verified'] = true;
-          update['/verifications/' + token] = null;
+          // update user detail
+          var update = {};
+          update['/users/' + verificationData.user_id + '/email_verified'] = true;
           database.ref().update(update)
             .then(function() {
               resolve(1);
@@ -82,8 +171,8 @@ module.exports.sendInvites = function(req, res, invites) {
   invites.forEach(function(invite) {
     var user = {};
     user.email = invite.email;
-    if (user.name) {
-      user.displayName = user.name;
+    if (invite.name) {
+      user.displayName = invite.name;
     } else {
       user.displayName = '';
     }
@@ -132,7 +221,7 @@ module.exports.sendInvites = function(req, res, invites) {
         } else {
           name = '';
         }
-        var link = 'http://' + req.headers.host + '/verify/' + result.token;
+        var link = 'http://' + req.headers.host + '/#/verify/' + result.token;
         return mailer.sendVerificationEmail(res, email, name, link);
       })
       .catch(function(error) {
@@ -238,7 +327,9 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       var team = {
         team_name: teamName,
         member_count: 1,
-        channel_count: 2
+        channel_count: 2,
+        general_channel_id: generalChannelKey,
+        random_channel_id: randomChannelKey
       };
 
       // Bulk-update

@@ -6,6 +6,7 @@ import MessageView from '../views/MessageView.vue'
 import LoginView from '../views/LoginView.vue'
 import CreateView from '../views/CreateView.vue'
 import VerifyView from '../views/VerifyView.vue'
+import CreateAccountView from '../views/CreateAccountView.vue'
 
 Vue.use(Router)
 
@@ -29,6 +30,10 @@ export default new Router({
     {
       path: '/verify/:token',
       component: VerifyView
+    },
+    {
+      path: '/account/:token',
+      component: CreateAccountView
     },
     {
       path: '/',
