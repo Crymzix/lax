@@ -102,6 +102,23 @@ export function login (email, password) {
   return auth.signInWithEmailAndPassword(email, password)
 }
 
+export function presenceListener (userId, cb) {
+  database.ref('.info/connected')
+    .on('value', function (snapshot) {
+      if (snapshot.val() === false) {
+        return
+      }
+      database.ref('/users/' + userId + '/online/')
+        .onDisconnect()
+        .set(false)
+        .then(function () {
+          database.ref('/users/' + userId + '/online/')
+            .set(true)
+          cb()
+        })
+    })
+}
+
 export function fetchUser (userId, store) {
   return database.ref('/users/' + userId)
     .once('value')
@@ -138,6 +155,25 @@ export function fetchUsers () {
     .then(function (snapshot) {
       return snapshot
     })
+}
+
+export function watchUsers (watch, cb) {
+  // we only want the latest users as 'child_added' retrieves all of the
+  // initial users first so we filter by timestamp to retrieve only the newest
+  const addRef = database.ref('users')
+    .orderByChild('timestamp')
+    .startAt(new Date().getTime())
+  const changeRef = database.ref('users')
+  const handler = snapshot => {
+    cb(snapshot)
+  }
+  if (watch) {
+    addRef.on('child_added', handler)
+    changeRef.on('child_changed', handler)
+  } else {
+    addRef.off()
+    changeRef.off()
+  }
 }
 
 export function fetchMessages (channelId) {

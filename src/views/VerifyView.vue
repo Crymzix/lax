@@ -116,7 +116,7 @@ h1 {
   margin-left: 41vw;
   margin-right: 41vw;
   position: absolute;
-  width: 18vw;
+  width: 300px;
   height: auto;
   background: #ffffff;
   border: 1px solid #003a99;

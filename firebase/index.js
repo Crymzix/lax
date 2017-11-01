@@ -67,6 +67,7 @@ function setConfigFlagRules() {
               },
               "users": {
                 ".read": true,
+                ".indexOn": "timestamp",
                 "$uid": {
                   ".read": true,
                   ".write": "$uid === auth.uid"

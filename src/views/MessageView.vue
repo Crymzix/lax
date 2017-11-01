@@ -14,6 +14,9 @@ import SideMenu from '../components/SideMenu.vue'
 import MessageList from '../components/MessageList.vue'
 import Composer from '../components/Composer.vue'
 import InviteModal from '../components/InviteModal.vue'
+import {
+  presenceListener
+} from '../api'
 
 export default {
   name: 'messages',
@@ -31,6 +34,9 @@ export default {
   },
   mounted () {
     this.fetchMessages()
+    presenceListener(this.$store.state.userId, () => {
+      this.$store.commit('SET_ONLINE')
+    })
   },
   methods: {
     fetchMessages: function () {

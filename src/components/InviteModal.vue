@@ -233,7 +233,7 @@ export default {
   transition: all .3s ease;
   font-family: Helvetica, Arial, sans-serif;
   text-align: center;
-  overflow-y:scroll;
+  overflow-y: scroll;
 }
 
 .modal-container::-webkit-scrollbar {

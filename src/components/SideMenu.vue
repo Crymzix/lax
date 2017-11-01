@@ -26,7 +26,11 @@
     <ul class="user_list">
       <li v-for="user in users" class="user_item">
         <div v-if="user.email_verified" class="user_item_container">
-          @ {{ username(user) }}
+          <div class="status_icon" v-bind:class="{ online: user.online }">
+          </div>
+          <p class="username">
+            @ {{ username(user) }}
+          </p>
         </div>
       </li>
     </ul>
@@ -35,6 +39,10 @@
 </template>
 
 <script>
+import {
+  watchUsers
+} from '../api'
+
 export default {
   name: 'sidemenu',
   data () {
@@ -46,16 +54,26 @@ export default {
       currentChannelId: this.$store.state.user.last_viewed_channel_id
     }
   },
-  mounted () {
+  beforeMount () {
     this.fetchChannels()
     this.fetchUsers()
+      .then(() => {
+        watchUsers(true, user => {
+          this.$store.commit('SET_USER', {
+            user: user
+          })
+        })
+      })
+  },
+  beforeDestroy () {
+    watchUsers(false)
   },
   methods: {
     fetchChannels: function () {
       this.$store.dispatch('FETCH_CHANNELS')
     },
     fetchUsers: function () {
-      this.$store.dispatch('FETCH_USERS')
+      return this.$store.dispatch('FETCH_USERS')
     },
     selectChannel: function (channel) {
       if (this.currentChannelId !== channel.id) {
@@ -149,6 +167,31 @@ export default {
 
 .user_item_container.inactive {
   font-style: italic;
+}
+
+.status_icon {
+  vertical-align: middle;
+  background-color: transparent;
+  border: 2px solid #79adc7;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status_icon.online {
+  vertical-align: middle;
+  background-color: #1ac726;
+  border: 2px solid transparent;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.username {
+  display: inline-block;
+  margin: 0;
 }
 
 .channel_item_container:hover, .user_item_container:hover {

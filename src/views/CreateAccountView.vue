@@ -174,7 +174,7 @@ export default {
   margin-left: 40vw;
   margin-right: 40vw;
   position: absolute;
-  width: 20vw;
+  width: 350px;
   height: auto;
   background: #ffffff;
   border: 1px solid #003a99;

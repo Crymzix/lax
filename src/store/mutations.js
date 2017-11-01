@@ -8,6 +8,9 @@ export default {
   SET_LOGIN: (state) => {
     state.isLoggedIn = true
   },
+  SET_ONLINE: (state) => {
+    Vue.set(state.users[state.userId], 'online', true)
+  },
   SET_CHANNELS: (state, { channels }) => {
     channels.forEach(channel => {
       var channelValue = channel.val()
@@ -24,6 +27,9 @@ export default {
         Vue.set(state.users, user.key, userValue)
       }
     })
+  },
+  SET_USER: (state, { user }) => {
+    Vue.set(state.users, user.key, user.val())
   },
   SET_MESSAGES: (state, { channelId, messages }) => {
     if (!state.messages.hasOwnProperty(channelId)) {
