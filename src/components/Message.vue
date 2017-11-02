@@ -25,6 +25,17 @@ export default {
       userId: this.$store.state.userId
     }
   },
+  mounted () {
+    // url parsing for the first link found to display relevant metadata.
+    var urls = anchorMe(this.message.message, { list: true })
+    if (urls.length >= 1) {
+      /* og(urls[0].raw, (err, meta) => {
+        if (!err) {
+          console.log(meta)
+        }
+      }) */
+    }
+  },
   computed: {
     timestamp: function () {
       return timeAgo(this.message.timestamp) + ' ago'
@@ -47,6 +58,7 @@ export default {
 
 .message_container {
   padding: 15px 25px;
+  white-space: nowrap;
 }
 
 .user_image {
@@ -59,6 +71,8 @@ export default {
 .right_container {
   margin-left: 10px;
   display: inline-block;
+  white-space: nowrap;
+  word-wrap: break-word;
 }
 
 .username {
@@ -86,9 +100,12 @@ export default {
 .message {
   margin-left: 0px;
   vertical-align: top;
+  word-wrap: break-word;
+  white-space: initial;
 }
 
 p {
+  width: 1000px;
   font-size: 16px;
   margin: 0;
   color: #2c3e50;

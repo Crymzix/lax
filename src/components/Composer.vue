@@ -34,9 +34,13 @@ export default {
 </script>
 
 <style scoped>
-
 .container {
+  white-space: nowrap;
   border-top: 2px solid #003a99;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 34px;
+  height: auto;
 }
 
 .message_input {
@@ -47,7 +51,7 @@ export default {
   font-size: 15px;
   font-weight: 400;
   height: 70px;
-  width: 800px;
+  width: 700px;
   resize: none;
   padding: 12px 10px;
   border: 2px solid #003a99;

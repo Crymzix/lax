@@ -208,7 +208,8 @@ export function sendMessage (user, userId, channelId, messageInput) {
     user_id: userId,
     name: user.display_name,
     message: messageInput,
-    timestamp: Firebase.database.ServerValue.TIMESTAMP
+    timestamp: Firebase.database.ServerValue.TIMESTAMP,
+    channel_id: channelId
   }
   if (user.photo_url) {
     message.photo_url = user.photo_url

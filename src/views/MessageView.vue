@@ -3,6 +3,7 @@
     <invitemodal v-if="shouldShowInviteModal" v-on:closeInviteModal="showInviteModal(false)"></invitemodal>
     <sidemenu v-on:changedChannelId="changeChannelId" v-on:showInviteModal="showInviteModal(true)" class="sidemenu"></sidemenu>
     <div class="right_container">
+      <headerbar class="header" :channel-id="currentChannelId"></headerbar>
       <messagelist class="message_list" :channel-id="currentChannelId"></messagelist>
       <composer class="composer"></composer>
     </div>
@@ -14,6 +15,7 @@ import SideMenu from '../components/SideMenu.vue'
 import MessageList from '../components/MessageList.vue'
 import Composer from '../components/Composer.vue'
 import InviteModal from '../components/InviteModal.vue'
+import Header from '../components/Header.vue'
 import {
   presenceListener,
   watchMessages
@@ -25,7 +27,8 @@ export default {
     'sidemenu': SideMenu,
     'messagelist': MessageList,
     'composer': Composer,
-    'invitemodal': InviteModal
+    'invitemodal': InviteModal,
+    'headerbar': Header
   },
   data () {
     return {
@@ -70,9 +73,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#main {
-
-}
 
 .right_container {
   width: 100%;
@@ -93,7 +93,11 @@ export default {
 }
 
 .message_list {
-  height: 82vh;
+  height: 75vh;
+}
+
+.header {
+  height: 7vh;
 }
 
 h1, h2 {

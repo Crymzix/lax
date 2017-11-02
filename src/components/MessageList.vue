@@ -52,6 +52,7 @@ export default {
 
 .message_list_container::-webkit-scrollbar {
     width: 10px;
+    height: 10px;
 }
 
 .message_list_container::-webkit-scrollbar-track {

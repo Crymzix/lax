@@ -319,6 +319,7 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         name: "general",
         member_count: 1,
         message_count: 1,
+        description: "A general purpose channel.",
         last_message: "This is the general channel! Generally speaking...",
         last_message_id: firstGeneralMessageKey,
         deletable: false,
@@ -326,17 +327,20 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       };
       var generalChannelKey = database.ref('channels').push().key;
       user.last_viewed_channel_id = generalChannelKey;
+      firstGeneralMessage.channel_id = generalChannelKey;
 
       var randomChannel = {
         name: "random",
         member_count: 1,
         message_count: 1,
+        description: "Randy Jackson.",
         last_message: "Welcome to the random channel! Let's get weird.",
         last_message_id: firstRandomMessageKey,
         deletable: false,
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
       var randomChannelKey = database.ref('channels').push().key;
+      firstRandomMessage.channel_id = randomChannelKey;
 
       var team = {
         team_name: teamName,
