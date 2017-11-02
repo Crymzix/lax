@@ -28,7 +28,6 @@ export default {
   },
   watch: {
     messageInput: function (messageInput) {
-      // this.$store.state.commit()
     }
   }
 }

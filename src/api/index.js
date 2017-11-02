@@ -177,7 +177,7 @@ export function watchUsers (watch, cb) {
 }
 
 export function fetchMessages (channelId) {
-  return database.ref('/messages/' + channelId)
+  return database.ref('/channel-messages/' + channelId)
     .once('value')
     .then(function (snapshot) {
       return snapshot
@@ -185,13 +185,13 @@ export function fetchMessages (channelId) {
 }
 
 export function watchMessages (watch, channelId, cb) {
-  const addRef = database.ref('/messages/' + channelId)
+  const addRef = database.ref('/channel-messages/' + channelId)
     .orderByChild('timestamp')
     .startAt(new Date().getTime())
-  const changeRef = database.ref('/messages/' + channelId)
+  const changeRef = database.ref('/channel-messages/' + channelId)
   const handler = snapshot => {
     var message = snapshot.val()
-    message.id = message.key
+    message.id = snapshot.key
     cb(message)
   }
   if (watch) {
@@ -215,7 +215,8 @@ export function sendMessage (user, userId, channelId, messageInput) {
   }
   var messageKey = database.ref('messages').push().key
   var update = {}
-  update['/messages/' + channelId + '/' + messageKey] = message
+  update['/messages/' + messageKey] = message
+  update['/channel-messages/' + channelId + '/' + messageKey] = message
   return database.ref().update(update)
     .then(function () {
       message.id = messageKey

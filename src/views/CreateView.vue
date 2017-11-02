@@ -118,12 +118,16 @@ export default {
           teamName: this.teamName,
           displayName: this.displayName,
           email: this.email,
-          password: this.password }).then(() => {
-            this.state = 'initialized'
-            setTimeout(() => {
-              this.$router.push({ path: '/login' })
-            }, 1000)
-          })
+          password: this.password })
+            .then(() => {
+              this.state = 'initialized'
+              setTimeout(() => {
+                this.$router.push({ path: '/login' })
+              }, 1000)
+            })
+            .catch((error) => {
+              console.log(error.message)
+            })
       } else {
         this.state = 'uninitialized'
       }

@@ -69,7 +69,7 @@ module.exports.setAccount = function(token, displayName, password) {
           update['/users/' + userId + '/last_viewed_channel_id/'] = team.general_channel_id;
           update['/members/' + team.general_channel_id + '/' + userId] = true;
           update['/members/' + team.random_channel_id + '/' + userId] = true;
-          update['/team/member_count/' ] = team.count++;
+          update['/team/member_count/' ] = team.member_count++;
           database.ref().update(update)
             .then(function() {
               resolve();
@@ -348,13 +348,13 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
 
       // Bulk-update
       var update = {};
-      update['/messages/' + generalChannelKey + '/' + firstGeneralMessageKey] = firstGeneralMessage;
-      update['/messages/' + randomChannelKey + '/' + firstRandomMessageKey] = firstRandomMessage;
+      update['/messages/' + firstGeneralMessageKey] = firstGeneralMessage;
+      update['/messages/' + firstRandomMessageKey] = firstRandomMessage;
+      update['/channel-messages/' + generalChannelKey + '/' + firstGeneralMessageKey] = firstGeneralMessage;
+      update['/channel-messages/' + randomChannelKey + '/' + firstRandomMessageKey] = firstRandomMessage;
       update['/channels/' + generalChannelKey] = generalChannel;
       update['/channels/' + randomChannelKey] = randomChannel;
       update['/users/' + userObject.uid] = user;
-      //update['/user_channels/' + userObject.uid + '/'+ generalChannelKey] = generalChannel;
-      //update['/user_channels/' + userObject.uid + '/' + randomChannelKey] = randomChannel;
       update['/members/' + generalChannelKey + '/' + userObject.uid] = true;
       update['/members/' + randomChannelKey + '/' + userObject.uid] = true;
       update['/team/'] = team;

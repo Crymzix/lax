@@ -56,7 +56,7 @@ function setConfigFlagRules() {
                   ".read" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null"
                 }
               },
-              "messages": {
+              "channel-messages": {
                 "$channel_id" : {
                   ".read" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null",
                   ".write" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null",
@@ -65,6 +65,9 @@ function setConfigFlagRules() {
                     ".read" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null"
                   }
                 }
+              },
+              "messages": {
+                ".write" : "auth != null"
               },
               "users": {
                 ".read": true,
