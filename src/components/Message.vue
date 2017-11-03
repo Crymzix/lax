@@ -7,6 +7,10 @@
       <div>
         <h1 class="username">{{ message.name }}</h1>
         <span class="timestamp">{{ timestamp }}</span>
+        <div class="options">
+          <img class="options_icon" :src="reactIcon" @mouseover="reactHover" @mouseleave="reactHover"/>
+          <img class="options_icon" :src="commentIcon" @mouseover="commentHover" @mouseleave="commentHover"/>
+        </div>
       </div>
       <p class="message" v-html="formattedMessage"></p>
     </div>
@@ -17,11 +21,18 @@
 import { timeAgo } from '../utils/filters'
 import anchorMe from 'anchorme'
 
+const smileImg = require('../assets/smile.svg')
+const smileImgSelected = require('../assets/smile_selected.svg')
+const commentImg = require('../assets/comment.svg')
+const commentImgSelected = require('../assets/comment_selected.svg')
+
 export default {
   name: 'message',
   props: ['message'],
   data () {
     return {
+      reactIcon: smileImg,
+      commentIcon: commentImg,
       userId: this.$store.state.userId
     }
   },
@@ -50,15 +61,63 @@ export default {
         ]
       })
     }
+  },
+  methods: {
+    reactHover: function () {
+      if (this.reactIcon === smileImgSelected) {
+        this.reactIcon = smileImg
+      } else {
+        this.reactIcon = smileImgSelected
+      }
+    },
+    commentHover: function () {
+      if (this.commentIcon === commentImgSelected) {
+        this.commentIcon = commentImg
+      } else {
+        this.commentIcon = commentImgSelected
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
+.options_icon {
+  vertical-align: middle;
+  width: 18px;
+  display: inline-block;
+  fill: black;
+  cursor: pointer;
+}
+
+.options_icon:hover {
+  fill: #0352c7;
+}
+
+.options {
+  margin-top: -10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  display: none;
+  float: right;
+  border: 2px solid #b9d6e7;
+  border-radius: 5px;
+  background: white;
+}
 
 .message_container {
   padding: 15px 25px;
   white-space: nowrap;
+}
+
+.message_container:hover {
+  background: #dde6e2;
+}
+
+.message_container:hover .options{
+  display: inline-block;
 }
 
 .user_image {
@@ -69,6 +128,7 @@ export default {
 }
 
 .right_container {
+  width: 1200px;
   margin-left: 10px;
   display: inline-block;
   white-space: nowrap;

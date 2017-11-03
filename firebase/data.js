@@ -299,7 +299,6 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       var firstGeneralMessage = {
         user_id: "lax_bot",
         name: "lax",
-        photo_url: null,
         message: "This is the general channel! Generally speaking...",
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
@@ -308,7 +307,6 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       var firstRandomMessage = {
         user_id: "lax_bot",
         name: "lax",
-        photo_url: null,
         message: "Welcome to the random channel! Let's get weird",
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
@@ -322,6 +320,7 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         description: "A general purpose channel.",
         last_message: "This is the general channel! Generally speaking...",
         last_message_id: firstGeneralMessageKey,
+        last_message_timestamp: firebase.database.ServerValue.TIMESTAMP,
         deletable: false,
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
@@ -336,6 +335,7 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         description: "Randy Jackson.",
         last_message: "Welcome to the random channel! Let's get weird.",
         last_message_id: firstRandomMessageKey,
+        last_message_timestamp: firebase.database.ServerValue.TIMESTAMP,
         deletable: false,
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };

@@ -204,23 +204,19 @@ export function watchMessages (watch, channelId, cb) {
 }
 
 export function sendMessage (user, userId, channelId, messageInput) {
+  var messageKey = database.ref('messages').push().key
   var message = {
     user_id: userId,
     name: user.display_name,
     message: messageInput,
     timestamp: Firebase.database.ServerValue.TIMESTAMP,
-    channel_id: channelId
+    channel_id: channelId,
+    id: messageKey,
+    type: 'message'
   }
-  if (user.photo_url) {
-    message.photo_url = user.photo_url
-  }
-  var messageKey = database.ref('messages').push().key
-  var update = {}
-  update['/messages/' + messageKey] = message
-  update['/channel-messages/' + channelId + '/' + messageKey] = message
-  return database.ref().update(update)
+  var queueRef = database.ref('queue/tasks')
+  return queueRef.push(message)
     .then(function () {
-      message.id = messageKey
       // artificially set the timestamp property as Firebase.database.ServerValue.TIMESTAMP
       // doesn't actually set the timestamp (it merely acts as an indicator to tell the
       // database to use the server time when writing).

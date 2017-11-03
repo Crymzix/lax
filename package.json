@@ -20,6 +20,7 @@
     "express": "^4.16.2",
     "firebase": "^4.4.0",
     "firebase-admin": "^5.4.1",
+    "firebase-queue": "^1.6.1",
     "jade": "^1.11.0",
     "moment": "^2.19.1",
     "nodemailer": "^4.3.1",

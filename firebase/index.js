@@ -5,6 +5,7 @@ var request = require('request');
 
 var serviceAccount = require('../server-config.json');
 var databaseUrl = require('../src/config.json').databaseURL;
+var worker = require('./worker');
 
 if (serviceAccount !== null && databaseUrl !== null) {
   admin.initializeApp({
@@ -14,6 +15,7 @@ if (serviceAccount !== null && databaseUrl !== null) {
 }
 
 var database = admin.database();
+worker.initialize(database);
 module.exports.database = database;
 
 var auth = admin.auth();
@@ -79,6 +81,12 @@ function setConfigFlagRules() {
               },
               "team": {
               	".read":true
+              },
+              "queue": {
+                "tasks": {
+                  ".write": "auth != null",
+                  ".indexOn": "_state"
+                }
               }
             }
           }
