@@ -3,6 +3,8 @@
 // the application to multiple nodes.
 var Queue = require('firebase-queue');
 var firebase = require('firebase');
+var anchorme = require("anchorme").default;
+var ogs = require('open-graph-scraper');
 
 var database;
 
@@ -22,14 +24,54 @@ module.exports.initialize = function (db) {
         .then(function(message) {
           return updateChannel(message);
         })
+        .then(function(message) {
+          return populateUrlMetadata(message);
+        })
         .then(function() {
-          resolve();
+          resolve()
         })
         .catch(function(error) {
           reject(error);
         })
     } else {
       reject("Invalid data type.");
+    }
+  });
+}
+
+// Grab Open Graph data and populate meta data about the first url mentioned in
+// the message content.
+function populateUrlMetadata(message) {
+  return new Promise(function(resolve, reject) {
+    var urls = anchorme(message.message, { list: true });
+    if (urls.length >= 1) {
+      var options = {'url': urls[0].raw, 'timeout': 4000};
+      ogs(options, function(error, results) {
+        if (error) {
+          reject(error);
+        } else {
+          var data = results.data;
+          if (results.success) {
+            var meta = {
+              title: data.ogTitle,
+              description: data.ogDescription,
+              url: data.ogUrl,
+              photo_url: data.ogImage.url
+            };
+            database.ref('/channel-messages/' + message.channel_id + '/' + message.id + '/meta').set(meta)
+              .then(function() {
+                resolve();
+              })
+              .catch(function(error) {
+                reject(error);
+              });
+          } else {
+            resolve();
+          }
+        }
+      });
+    } else {
+      resolve();
     }
   });
 }
@@ -44,6 +86,9 @@ function updateChannel(message) {
       channel.last_message_timestamp = firebase.database.ServerValue.TIMESTAMP;
       channel.message_count = channel.message_count + 1;
       return channelRef.set(channel);
+    })
+    .then(function() {
+      return message;
     });
 }
 

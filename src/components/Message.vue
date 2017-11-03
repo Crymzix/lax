@@ -13,6 +13,13 @@
         </div>
       </div>
       <p class="message" v-html="formattedMessage"></p>
+      <div v-if="message.meta" class="meta_container">
+        <div class="meta_image_container">
+          <img :src="message.meta.photo_url"/>
+        </div>
+        <a class="meta_title" target="_blank" v-bind:href="message.meta.url">{{ message.meta.title }}</a>
+        <div class="meta_description">{{ message.meta.description }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -37,15 +44,7 @@ export default {
     }
   },
   mounted () {
-    // url parsing for the first link found to display relevant metadata.
-    var urls = anchorMe(this.message.message, { list: true })
-    if (urls.length >= 1) {
-      /* og(urls[0].raw, (err, meta) => {
-        if (!err) {
-          console.log(meta)
-        }
-      }) */
-    }
+    //
   },
   computed: {
     timestamp: function () {
@@ -82,6 +81,63 @@ export default {
 </script>
 
 <style scoped>
+.meta_container {
+  background: white;
+  margin-top: 10px;
+  border: 1px solid #b9d6e7;
+  border-radius: 5px;
+  width: 280px;
+}
+
+.meta_image_container {
+  position: relative;
+  width: 280px;
+  height: 185px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.meta_image_container img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  min-height:100%;
+  min-width: 100%;
+  -webkit-transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+}
+
+.meta_title {
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: 20px;
+  max-height: 20px;
+}
+
+.meta_description {
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-family: 'Roboto', sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 15px;
+  max-height: 45px;
+  word-wrap: break-word;
+  display: block;
+}
+
 .options_icon {
   vertical-align: middle;
   width: 18px;
