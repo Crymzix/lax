@@ -9,7 +9,7 @@
     </div>
     <div>
       <h3 class="heading">channels</h3>
-      <img class="add_icon" v-on:click="addChannel" src="~../assets/plus.png"/>
+      <img class="add_icon" v-tooltip.top-center="'Create a channel'" v-on:click="addChannel" src="~../assets/plus.png"/>
     </div>
     <ul class="channel_list">
       <li v-for="channel in channels" class="channel_item">
@@ -21,7 +21,7 @@
     </ul>
     <div>
       <h3 class="heading">members</h3>
-      <img class="add_icon" v-on:click="addMembers" src="~../assets/plus.png"/>
+      <img class="add_icon" v-tooltip.top-center="'Open a direct message'"v-on:click="addMembers" src="~../assets/plus.png"/>
     </div>
     <ul class="user_list">
       <li v-for="user in users" class="user_item">
@@ -88,7 +88,7 @@ export default {
       }
     },
     addChannel: function () {
-      //
+      this.$emit('showAddChannelModal')
     },
     addMembers: function () {
       //

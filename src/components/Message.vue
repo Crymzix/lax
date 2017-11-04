@@ -8,8 +8,8 @@
         <h1 class="username">{{ message.name }}</h1>
         <span class="timestamp">{{ timestamp }}</span>
         <div class="options">
-          <img class="options_icon" :src="reactIcon" @mouseover="reactHover" @mouseleave="reactHover"/>
-          <img class="options_icon" :src="commentIcon" @mouseover="commentHover" @mouseleave="commentHover"/>
+          <img v-tooltip.top-center="'React'"class="options_icon" :src="reactIcon" @mouseover="reactHover" @mouseleave="reactHover"/>
+          <img v-tooltip.top-center="'Comment'"class="options_icon" :src="commentIcon" @mouseover="commentHover" @mouseleave="commentHover"/>
         </div>
       </div>
       <p class="message" v-html="formattedMessage"></p>
@@ -95,6 +95,7 @@ export default {
   height: 185px;
   overflow: hidden;
   margin-bottom: 10px;
+  border-bottom: 1px solid #b9d6e7;
 }
 
 .meta_image_container img {

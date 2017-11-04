@@ -1,7 +1,8 @@
 <template>
   <div class="main">
     <invitemodal v-if="shouldShowInviteModal" v-on:closeInviteModal="showInviteModal(false)"></invitemodal>
-    <sidemenu v-on:changedChannelId="changeChannelId" v-on:showInviteModal="showInviteModal(true)" class="sidemenu"></sidemenu>
+    <addchannelmodal v-if="shouldShowAddChannelModal" v-on:closeAddChannelModal="showAddChannelModal(false)"></addchannelmodal>
+    <sidemenu v-on:changedChannelId="changeChannelId" v-on:showAddChannelModal="showAddChannelModal(true)" v-on:showInviteModal="showInviteModal(true)" class="sidemenu"></sidemenu>
     <div class="right_container">
       <headerbar class="header" :channel-id="currentChannelId"></headerbar>
       <messagelist class="message_list" :channel-id="currentChannelId"></messagelist>
@@ -15,6 +16,7 @@ import SideMenu from '../components/SideMenu.vue'
 import MessageList from '../components/MessageList.vue'
 import Composer from '../components/Composer.vue'
 import InviteModal from '../components/InviteModal.vue'
+import AddChannelModal from '../components/AddChannelModal.vue'
 import Header from '../components/Header.vue'
 import {
   presenceListener,
@@ -28,12 +30,14 @@ export default {
     'messagelist': MessageList,
     'composer': Composer,
     'invitemodal': InviteModal,
+    'addchannelmodal': AddChannelModal,
     'headerbar': Header
   },
   data () {
     return {
       currentChannelId: this.$store.state.user.last_viewed_channel_id,
-      shouldShowInviteModal: false
+      shouldShowInviteModal: false,
+      shouldShowAddChannelModal: false
     }
   },
   mounted () {
@@ -66,6 +70,9 @@ export default {
     },
     showInviteModal: function (shouldShow) {
       this.shouldShowInviteModal = shouldShow
+    },
+    showAddChannelModal: function (shouldShow) {
+      this.shouldShowAddChannelModal = shouldShow
     }
   }
 }

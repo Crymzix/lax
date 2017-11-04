@@ -322,7 +322,8 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         last_message_id: firstGeneralMessageKey,
         last_message_timestamp: firebase.database.ServerValue.TIMESTAMP,
         deletable: false,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        private: false
       };
       var generalChannelKey = database.ref('channels').push().key;
       user.last_viewed_channel_id = generalChannelKey;
@@ -337,7 +338,8 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         last_message_id: firstRandomMessageKey,
         last_message_timestamp: firebase.database.ServerValue.TIMESTAMP,
         deletable: false,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
+        timestamp: firebase.database.ServerValue.TIMESTAMP,
+        private: false
       };
       var randomChannelKey = database.ref('channels').push().key;
       firstRandomMessage.channel_id = randomChannelKey;
