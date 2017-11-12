@@ -37,6 +37,6 @@ export default {
   },
   SET_CURRENT_CHANNEL: ({ commit, state }, { channelId }) => {
     return setCurrentChannelId(state.userId, channelId)
-      .then(() => commit('SET_CHANNEL', { channelId }))
+      .then(() => commit('SET_CURRENT_CHANNEL', { channelId }))
   }
 }

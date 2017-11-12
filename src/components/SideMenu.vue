@@ -40,6 +40,7 @@
 
 <script>
 import {
+  watchChannels,
   watchUsers
 } from '../api'
 
@@ -56,6 +57,13 @@ export default {
   },
   beforeMount () {
     this.fetchChannels()
+      .then(() => {
+        watchChannels(true, (channel) => {
+          this.$store.commit('SET_CHANNEL', {
+            channel: channel
+          })
+        })
+      })
     this.fetchUsers()
       .then(() => {
         watchUsers(true, (user) => {
@@ -66,11 +74,12 @@ export default {
       })
   },
   beforeDestroy () {
+    watchChannels(false)
     watchUsers(false)
   },
   methods: {
     fetchChannels: function () {
-      this.$store.dispatch('FETCH_CHANNELS')
+      return this.$store.dispatch('FETCH_CHANNELS')
     },
     fetchUsers: function () {
       return this.$store.dispatch('FETCH_USERS')
@@ -78,7 +87,7 @@ export default {
     selectChannel: function (channel) {
       if (this.currentChannelId !== channel.id) {
         this.currentChannelId = channel.id
-        this.$store.commit('SET_CHANNEL', {
+        this.$store.commit('SET_CURRENT_CHANNEL', {
           channelId: this.currentChannelId
         })
         this.$store.dispatch('SET_CURRENT_CHANNEL', {
@@ -109,7 +118,7 @@ export default {
 
 <style scoped>
 .root {
-  background: linear-gradient(0deg, #0352c7, #083577);
+  background: linear-gradient(0deg, #0352c7, #083577, #083577);
   padding-left: 15px;
   padding-right: 15px;
 }

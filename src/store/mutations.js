@@ -20,6 +20,9 @@ export default {
       }
     })
   },
+  SET_CHANNEL: (state, { channel }) => {
+    Vue.set(state.channels, channel.id, channel)
+  },
   SET_USERS: (state, { users }) => {
     users.forEach(user => {
       var userValue = user.val()
@@ -46,7 +49,7 @@ export default {
   SET_MESSAGE: (state, { channelId, message }) => {
     Vue.set(state.messages[channelId], message.id, message)
   },
-  SET_CHANNEL: (state, { channelId }) => {
+  SET_CURRENT_CHANNEL: (state, { channelId }) => {
     Vue.set(state.user, 'last_viewed_channel_id', channelId)
   }
 }

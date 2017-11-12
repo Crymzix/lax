@@ -2,7 +2,7 @@
   <transition name="modal">
     <div class="modal-mask">
       <div class="modal-wrapper">
-        <img class="close_icon" v-on:click="closeInviteModal" src="~../assets/close.png"/>
+        <img class="close_icon" v-on:click="closeAddChannelModal" src="~../assets/close.png"/>
         <div class="container">
           <h1><b>Create a {{ private? 'private' : '' }} channel</b></h1>
           <p class="channel_description">
@@ -19,10 +19,12 @@
             </p>
             <h1 class="input_title">Name</h1>
             <input v-model="teamName" type="text" placeholder="e.g. design" class="text_field"></input>
+            <div class="explanation">Must be lower case, with no spaces or periods and less than 22 characters.</div>
             <h1 class="input_title">Description (Optional)</h1>
             <input v-model="teamDescription" type="text" class="text_field"></input>
-            <h1 class="input_title">Send Invites (Optional)</h1>
-            <multiselect class="custom_multiselect"
+            <div class="explanation">What is this channel about?</div>
+            <h1 v-if="private" class="input_title">Send Invites (Optional)</h1>
+            <multiselect v-if="private" class="custom_multiselect"
               v-model="invitedUsers"
               :options="users"
               :multiple="true"
@@ -30,10 +32,17 @@
               :clear-on-select="false"
               :hide-selected="true"
               :preserve-search="true"
+              select-label=""
+              noResult="'asdasdasd'"
               placeholder="Search by name"
               label="display_name"
               track-by="display_name">
+              <span slot="noResult">Couldn't find that user with that display name.</span>
             </multiselect>
+            <div class="button_container">
+              <button v-on:click="closeAddChannelModal" type="button" class="cancel_button" v>Cancel</button>
+              <button v-on:click="create" v-bind:class="{ inactive: teamName === '' || teamDescription === '', loading: loading }" type="button" class="create_button" v>{{ createButtonText }}</button>
+            </div>
           </div>
         </div>
       </div>
@@ -42,10 +51,16 @@
 </template>
 
 <script>
+import {
+  createChannel
+} from '../api'
+
 export default {
   name: 'addchannelmodal',
   data () {
     return {
+      createButtonText: 'Create Channel',
+      loading: false,
       private: false,
       teamName: '',
       teamDescription: '',
@@ -53,8 +68,13 @@ export default {
       users: this.userList()
     }
   },
+  watch: {
+    teamName: function (teamName) {
+      this.teamName = teamName.replace(/ /g, '').replace('.', '').toLowerCase().substring(0, 21)
+    }
+  },
   methods: {
-    closeInviteModal: function () {
+    closeAddChannelModal: function () {
       this.$emit('closeAddChannelModal')
     },
     switchMode: function () {
@@ -67,10 +87,29 @@ export default {
     userList: function () {
       var userList = []
       var usersObject = this.$store.state.users
-      for (var userId in usersObject) {
-        userList.push(usersObject[userId])
+      for (let userId in usersObject) {
+        let user = usersObject[userId]
+        user.user_id = userId
+        if (user.user_id !== this.$store.state.userId) {
+          userList.push(user)
+        }
       }
       return userList
+    },
+    create: function () {
+      this.loading = true
+      this.createButtonText = 'Creating...'
+      createChannel(this.teamName, this.teamDescription, this.private, this.$store.state.userId, this.invitedUsers)
+        .then(() => {
+          this.createButtonText = 'Created!'
+          setTimeout(() => {
+            this.$emit('closeAddChannelModal')
+          }, 500)
+        })
+        .catch((error) => {
+          console.log(error.message)
+          this.$emit('closeAddChannelModal')
+        })
     }
   }
 }
@@ -80,6 +119,79 @@ export default {
 </style>
 
 <style scoped>
+.create_button {
+  margin-right: 150px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  border-radius: 15px;
+  outline: none;
+  border: none;
+  padding-left: 15px;
+  padding-right: 15px;
+  background: #25ad88;
+  height: 50px;
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  -o-transition:color .2s ease-out, background .2s ease-in;
+  -ms-transition:color .2s ease-out, background .2s ease-in;
+  -moz-transition:color .2s ease-out, background .2s ease-in;
+  -webkit-transition:color .2s ease-out, background .2s ease-in;
+  transition:color .2s ease-out, background .2s ease-in;
+}
+
+.create_button:hover {
+  background: #178b6b;
+}
+
+.create_button.loading {
+  background: #19aafb;
+  pointer-events: none;
+}
+
+.create_button.inactive {
+  background: #999e9d;
+  pointer-events: none;
+}
+
+.cancel_button {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  border-radius: 15px;
+  outline: none;
+  border: none;
+  padding-left: 15px;
+  padding-right: 15px;
+  background: #083577;
+  opacity: 0.9;
+  height: 50px;
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  -o-transition:color .2s ease-out, background .2s ease-in;
+  -ms-transition:color .2s ease-out, background .2s ease-in;
+  -moz-transition:color .2s ease-out, background .2s ease-in;
+  -webkit-transition:color .2s ease-out, background .2s ease-in;
+  transition:color .2s ease-out, background .2s ease-in;
+}
+
+.cancel_button:hover {
+  opacity: 1.0;
+}
+
+.button_container {
+  float: right;
+  margin-top: 20px;
+}
+
+.explanation {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #b4b2a9;
+}
+
 .custom_multiselect {
   width: 550px;
 }

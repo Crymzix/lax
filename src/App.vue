@@ -63,6 +63,18 @@ export default {
   border: 1px solid #003a99;
 }
 
+.custom_multiselect .multiselect__option--highlight {
+  background: #1495ff;
+}
+
+.custom_multiselect .multiselect__option--highlight:after {
+  background: #1495ff;
+}
+
+.custom_multiselect .multiselect__content-wrapper {
+  border: 1px solid #083577;
+}
+
 h1 {
   margin: 0 0 0 0;
 }

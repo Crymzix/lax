@@ -54,6 +54,7 @@ function setConfigFlagRules() {
               },
               "channels": {
                 ".read": true,
+                ".indexOn": "timestamp",
                 "$channel_id": {
                   ".read" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null"
                 }

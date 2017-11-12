@@ -149,6 +149,24 @@ export function fetchChannels () {
     })
 }
 
+export function watchChannels (watch, cb) {
+  const addRef = database.ref('/channels/')
+    .orderByChild('timestamp')
+    .startAt(new Date().getTime())
+  const changeRef = database.ref('/channels/')
+  const handler = snapshot => {
+    var channel = snapshot.val()
+    cb(channel)
+  }
+  if (watch) {
+    addRef.on('child_added', handler)
+    changeRef.on('child_changed', handler)
+  } else {
+    addRef.off()
+    changeRef.off()
+  }
+}
+
 export function fetchUsers () {
   return database.ref('users')
     .once('value')
@@ -222,6 +240,28 @@ export function sendMessage (user, userId, channelId, messageInput) {
       // database to use the server time when writing).
       message.timestamp = Date.now()
       return message
+    })
+}
+
+export function createChannel (name, description, isPrivate, userId, invites) {
+  var channelKey = database.ref('channels').push().key
+  var channel = {
+    deletable: true,
+    description: description,
+    member_count: 1 + invites.length,
+    message_count: 0,
+    name: name,
+    private: isPrivate,
+    timestamp: Firebase.database.ServerValue.TIMESTAMP,
+    id: channelKey,
+    creator_id: userId,
+    invites: invites,
+    type: 'channel'
+  }
+  var queueRef = database.ref('queue/tasks')
+  return queueRef.push(channel)
+    .then(function () {
+      return channel
     })
 }
 

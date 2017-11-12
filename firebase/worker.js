@@ -20,23 +20,59 @@ module.exports.initialize = function (db) {
   // start listening for tasks being pushed on to the work queue.
   var queue = new Queue(ref, function(data, progress, resolve, reject) {
     if (data.type === 'message') {
-      fanOutMessage(data)
-        .then(function(message) {
-          return updateChannel(message);
-        })
-        .then(function(message) {
-          return populateUrlMetadata(message);
-        })
-        .then(function() {
-          resolve()
-        })
-        .catch(function(error) {
-          reject(error);
-        })
+      processMessageTask(data, resolve, reject);
+    } else if (data.type === 'channel') {
+      processChannelTask(data, resolve, reject);
     } else {
       reject("Invalid data type.");
     }
   });
+}
+
+function processChannelTask(data, resolve, reject) {
+  fanOutChannel(data)
+    .then(function(channel) {
+      resolve();
+    })
+    .catch(function(error) {
+      reject(error);
+    });
+}
+
+function fanOutChannel(data) {
+  var channel = data;
+  var update = {};
+  update['/members/' + channel.id + '/' + channel.creator_id] = true;
+  channel.creator_id = null;
+  if (channel.invites) {
+    channel.invites.forEach(function(invite) {
+      update['/members/' + channel.id + '/' + invite.user_id] = true;
+    });
+    channel.invites = null;
+  }
+  channel.type = null;
+
+  update['/channels/' + channel.id] = channel;
+  return database.ref().update(update)
+    .then(function() {
+      return channel;
+    });
+}
+
+function processMessageTask(data, resolve, reject) {
+  fanOutMessage(data)
+    .then(function(message) {
+      return updateChannel(message);
+    })
+    .then(function(message) {
+      return populateUrlMetadata(message);
+    })
+    .then(function() {
+      resolve()
+    })
+    .catch(function(error) {
+      reject(error);
+    });
 }
 
 // Grab Open Graph data and populate meta data about the first url mentioned in

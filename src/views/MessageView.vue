@@ -100,11 +100,11 @@ export default {
 }
 
 .message_list {
-  height: 75vh;
+  height: calc(82vh - 70px);
 }
 
 .header {
-  height: 7vh;
+  height: 70px;
 }
 
 h1, h2 {

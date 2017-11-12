@@ -69,7 +69,7 @@ module.exports.setAccount = function(token, displayName, password) {
           update['/users/' + userId + '/last_viewed_channel_id/'] = team.general_channel_id;
           update['/members/' + team.general_channel_id + '/' + userId] = true;
           update['/members/' + team.random_channel_id + '/' + userId] = true;
-          update['/team/member_count/' ] = team.member_count++;
+          update['/team/member_count/' ] = team.member_count + 1;
           database.ref().update(update)
             .then(function() {
               resolve();
@@ -360,6 +360,8 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       update['/channel-messages/' + randomChannelKey + '/' + firstRandomMessageKey] = firstRandomMessage;
       update['/channels/' + generalChannelKey] = generalChannel;
       update['/channels/' + randomChannelKey] = randomChannel;
+      update['/user-channels/' + userObject.uid + '/' + generalChannelKey] = true;
+      update['/user-channels/' + userObject.uid + '/' + randomChannelKey] = true;
       update['/users/' + userObject.uid] = user;
       update['/members/' + generalChannelKey + '/' + userObject.uid] = true;
       update['/members/' + randomChannelKey + '/' + userObject.uid] = true;
