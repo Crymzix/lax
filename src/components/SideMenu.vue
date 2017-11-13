@@ -204,7 +204,7 @@ export default {
 }
 
 .channel_item_container:hover, .user_item_container:hover {
-  background: linear-gradient(90deg, transparent, #082e65, transparent);
+  background: linear-gradient(90deg, #082e65, #082e65, transparent);
 }
 
 .channel_item_container.active, .user_item_container.active {

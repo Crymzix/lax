@@ -151,8 +151,6 @@ export function fetchChannels () {
 
 export function watchChannels (watch, cb) {
   const addRef = database.ref('/channels/')
-    .orderByChild('timestamp')
-    .startAt(new Date().getTime())
   const changeRef = database.ref('/channels/')
   const handler = snapshot => {
     var channel = snapshot.val()
@@ -268,5 +266,15 @@ export function createChannel (name, description, isPrivate, userId, invites) {
 export function setCurrentChannelId (userId, channelId) {
   var update = {}
   update['/users/' + userId + '/last_viewed_channel_id'] = channelId
+  return database.ref().update(update)
+}
+
+export function setTyping (typing, userId, channelId) {
+  var update = {}
+  if (typing) {
+    update['/channels/' + channelId + '/typing/' + userId] = true
+  } else {
+    update['/channels/' + channelId + '/typing/' + userId] = null
+  }
   return database.ref().update(update)
 }

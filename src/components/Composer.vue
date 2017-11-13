@@ -6,10 +6,18 @@
         <img class="add_image" src="~../assets/add.png"/>
       </button>
     </div>
+    <div class="message_info">
+      {{ typingText }}
+    </div>
   </div>
 </template>
 
 <script>
+import {
+  setTyping
+} from '../api'
+import debounce from 'debounce'
+
 export default {
   name: 'composer',
   data () {
@@ -24,10 +32,47 @@ export default {
       }).then(() => {
         this.messageInput = ''
       })
-    }
+    },
+    notifyTyping: debounce(
+      function (messageInput) {
+        if (messageInput !== '') {
+          setTyping(true, this.$store.state.userId, this.$store.state.user.last_viewed_channel_id)
+        } else {
+          setTyping(false, this.$store.state.userId, this.$store.state.user.last_viewed_channel_id)
+        }
+      },
+      150)
   },
   watch: {
     messageInput: function (messageInput) {
+      this.notifyTyping(messageInput)
+    }
+  },
+  computed: {
+    typingText: function () {
+      var currentChannel = this.$store.state.channels[this.$store.state.user.last_viewed_channel_id]
+      if (!currentChannel) {
+        return ''
+      }
+      var typingMap = currentChannel.typing
+      if (!typingMap) {
+        return ''
+      }
+      var users = this.$store.state.users
+      var typingString = ''
+      var i = 0
+      for (var userId in typingMap) {
+        if (i === 0) {
+          typingString += users[userId].display_name
+        } else {
+          typingString += ', ' + users[userId].display_name
+        }
+        if (i === Object.keys(typingMap).length - 1) {
+          typingString += ' is typing...'
+        }
+        i++
+      }
+      return typingString
     }
   }
 }
@@ -39,8 +84,15 @@ export default {
   border-top: 2px solid #003a99;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-bottom: 34px;
+  padding-bottom: 4px;
   height: auto;
+}
+
+.message_info {
+  width: auto;
+  margin-left: 15px;
+  display: inline-block;
+  font-size: 12px;
 }
 
 .message_input {

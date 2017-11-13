@@ -56,7 +56,8 @@ function setConfigFlagRules() {
                 ".read": true,
                 ".indexOn": "timestamp",
                 "$channel_id": {
-                  ".read" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null"
+                  ".read" : "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null",
+                  ".write": "root.child('members/' + $channel_id + '/' + auth.uid).exists() && auth != null"
                 }
               },
               "channel-messages": {

@@ -296,24 +296,28 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
       };
 
       // Creating default messages to be put in default channels
+      var firstGeneralMessageKey = database.ref('messages').push().key;
       var firstGeneralMessage = {
+        id: firstGeneralMessageKey,
         user_id: "lax_bot",
         name: "lax",
         message: "This is the general channel! Generally speaking...",
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
-      var firstGeneralMessageKey = database.ref('messages').push().key;
 
+      var firstRandomMessageKey = database.ref('messages').push().key;
       var firstRandomMessage = {
+        id: firstRandomMessageKey,
         user_id: "lax_bot",
         name: "lax",
         message: "Welcome to the random channel! Let's get weird",
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
-      var firstRandomMessageKey = database.ref('messages').push().key;
 
       // Creating default channels
+      var generalChannelKey = database.ref('channels').push().key;
       var generalChannel = {
+        id: generalChannelKey,
         name: "general",
         member_count: 1,
         message_count: 1,
@@ -325,11 +329,12 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         private: false
       };
-      var generalChannelKey = database.ref('channels').push().key;
       user.last_viewed_channel_id = generalChannelKey;
       firstGeneralMessage.channel_id = generalChannelKey;
 
+      var randomChannelKey = database.ref('channels').push().key;
       var randomChannel = {
+        id: randomChannelKey,
         name: "random",
         member_count: 1,
         message_count: 1,
@@ -341,7 +346,6 @@ module.exports.createTeam = function(teamName, displayName, email, password) {
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         private: false
       };
-      var randomChannelKey = database.ref('channels').push().key;
       firstRandomMessage.channel_id = randomChannelKey;
 
       var team = {

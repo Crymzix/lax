@@ -7,7 +7,7 @@
         Sign in
       </h1>
       <input v-model="email" type="text" placeholder="Email" class="text_field"></input>
-      <input v-model="password" type="password" placeholder="Password" class="password_field"></input>
+      <input v-model="password" @keyup.enter="login" type="password" placeholder="Password" class="password_field"></input>
       <p id="error_message">{{ errorMessage }}</p>
       <button v-on:click="login" type="button" class="login_button" v-bind:class="{ inactive: state == 'signingIn' || state == 'signedIn' }">{{ loginButtonText }}</button>
     </div>
