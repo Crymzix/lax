@@ -9,7 +9,7 @@
         <span class="timestamp">{{ timestamp }}</span>
         <div class="options">
           <img v-tooltip.top-center="'React'"class="options_icon" :src="reactIcon" @mouseover="reactHover" @mouseleave="reactHover"/>
-          <img v-tooltip.top-center="'Comment'"class="options_icon" :src="commentIcon" @mouseover="commentHover" @mouseleave="commentHover"/>
+          <img v-tooltip.top-center="'Comment'"class="options_icon" v-on:click="comment(message)" :src="commentIcon" @mouseover="commentHover" @mouseleave="commentHover" />
         </div>
       </div>
       <p class="message" v-html="formattedMessage"></p>
@@ -75,6 +75,12 @@ export default {
       } else {
         this.commentIcon = commentImgSelected
       }
+    },
+    comment: function (message) {
+      this.$store.commit('SET_CURRENT_MESSAGE_ID', {
+        messageId: message.id
+      })
+      this.$emit('showCommentInput')
     }
   }
 }
@@ -185,7 +191,7 @@ export default {
 }
 
 .right_container {
-  width: 1200px;
+  width: 1000px;
   margin-left: 10px;
   display: inline-block;
   white-space: nowrap;
@@ -227,6 +233,7 @@ p {
   margin: 0;
   color: #2c3e50;
   font-family: 'Roboto', sans-serif;
+  white-space: pre-wrap;
 }
 
 </style>

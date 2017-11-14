@@ -2,12 +2,34 @@
   <div class="main">
     <invitemodal v-if="shouldShowInviteModal" v-on:closeInviteModal="showInviteModal(false)"></invitemodal>
     <addchannelmodal v-if="shouldShowAddChannelModal" v-on:closeAddChannelModal="showAddChannelModal(false)"></addchannelmodal>
-    <sidemenu v-on:changedChannelId="changeChannelId" v-on:userSelected="changeUserChannelId" v-on:showAddChannelModal="showAddChannelModal(true)" v-on:showInviteModal="showInviteModal(true)" class="sidemenu"></sidemenu>
+    <sidemenu
+      v-on:changedChannelId="changeChannelId"
+      v-on:userSelected="changeUserChannelId"
+      v-on:showAddChannelModal="showAddChannelModal(true)"
+      v-on:showInviteModal="showInviteModal(true)"
+      class="sidemenu">
+    </sidemenu>
     <div class="right_container">
-      <headerbar class="header" :channel-id="currentChannelId"></headerbar>
-      <messagelist class="message_list" :channel-id="currentChannelId"></messagelist>
+      <headerbar
+        class="header"
+        :channel-id="currentChannelId">
+      </headerbar>
+      <messagelist
+        v-on:showCommentInput="showCommentInput"
+        class="message_list"
+        :channel-id="currentChannelId"
+        v-bind:class="{ collapsed: shouldShowInfoContainer}">
+      </messagelist>
       <composer class="composer"></composer>
     </div>
+    <sideinfocontainer
+      v-on:closeInfoContainer="showInfoContainer(false)"
+      v-on:openInfoContainer="showInfoContainer(true)"
+      class="side_info_container"
+      :type="infoType"
+      :open="shouldShowInfoContainer"
+      v-bind:class="{ visible: shouldShowInfoContainer }">
+    </sideinfocontainer>
   </div>
 </template>
 
@@ -18,6 +40,7 @@ import Composer from '../components/Composer.vue'
 import InviteModal from '../components/InviteModal.vue'
 import AddChannelModal from '../components/AddChannelModal.vue'
 import Header from '../components/Header.vue'
+import SideInfoContainer from '../components/SideInfoContainer.vue'
 import {
   presenceListener,
   watchMessages
@@ -31,13 +54,16 @@ export default {
     'composer': Composer,
     'invitemodal': InviteModal,
     'addchannelmodal': AddChannelModal,
-    'headerbar': Header
+    'headerbar': Header,
+    'sideinfocontainer': SideInfoContainer
   },
   data () {
     return {
       currentChannelId: this.$store.state.user.last_viewed_channel_id,
       shouldShowInviteModal: false,
-      shouldShowAddChannelModal: false
+      shouldShowAddChannelModal: false,
+      shouldShowInfoContainer: false,
+      infoType: ''
     }
   },
   mounted () {
@@ -77,6 +103,13 @@ export default {
     },
     showAddChannelModal: function (shouldShow) {
       this.shouldShowAddChannelModal = shouldShow
+    },
+    showCommentInput: function () {
+      this.infoType = 'comment'
+      this.shouldShowInfoContainer = true
+    },
+    showInfoContainer: function (show) {
+      this.shouldShowInfoContainer = show
     }
   }
 }
@@ -84,6 +117,36 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.main {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  position: fixed;
+}
+
+.side_info_container.visible {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: calc(82vh - 70px);
+  -webkit-transition: width 0.5s ease-in-out;
+  -moz-transition: width 0.5s ease-in-out;
+  -o-transition: width 0.5s ease-in-out;
+  transition: width 0.5s ease-in-out;
+}
+
+.side_info_container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0px;
+  height: calc(82vh - 70px);
+  -webkit-transition: width 0.25s ease-in-out;
+  -moz-transition: width 0.25s ease-in-out;
+  -o-transition: width 0.25s ease-in-out;
+  transition: width 0.25s ease-in-out;
+}
 
 .right_container {
   width: 100%;
@@ -105,6 +168,19 @@ export default {
 
 .message_list {
   height: calc(82vh - 70px);
+  width: 100%;
+  -webkit-transition: width 0.25s ease-in-out;
+  -moz-transition: width 0.25s ease-in-out;
+  -o-transition: width 0.25s ease-in-out;
+  transition: width 0.25s ease-in-out;
+}
+
+.message_list.collapsed {
+  width: calc(100% - 400px);
+  -webkit-transition: width 0.5s ease-in-out;
+  -moz-transition: width 0.5s ease-in-out;
+  -o-transition: width 0.5s ease-in-out;
+  transition: width 0.5s ease-in-out;
 }
 
 .header {

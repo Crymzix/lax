@@ -13,6 +13,7 @@ export default new Vuex.Store({
     isLoggedIn: false,
     userId: '',
     lastViewedUserChannelId: '',
+    currentMessageId: '' /* The current message id the user selected to comment on */,
     user: null,
     team: null,
     users: { /* [id: string]: User */ },

@@ -67,5 +67,8 @@ export default {
   },
   SET_CURRENT_USER_CHANNEL: (state, { channelId }) => {
     state.lastViewedUserChannelId = channelId
+  },
+  SET_CURRENT_MESSAGE_ID: (state, { messageId }) => {
+    state.currentMessageId = messageId
   }
 }

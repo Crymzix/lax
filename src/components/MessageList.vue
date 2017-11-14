@@ -1,7 +1,7 @@
 <template>
   <div class="root">
     <div class="message_list_container">
-      <message v-for="message in sortedMessages" :key="message.id" :message="message">
+      <message v-on:showCommentInput="showCommentInput" v-for="message in sortedMessages" :key="message.id" :message="message">
       </message>
     </div>
   </div>
@@ -34,6 +34,11 @@ export default {
       })
       return sortedMessages
     }
+  },
+  methods: {
+    showCommentInput: function () {
+      this.$emit('showCommentInput')
+    }
   }
 }
 </script>
@@ -51,17 +56,17 @@ export default {
 }
 
 .message_list_container::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+  width: 10px;
+  height: 10px;
 }
 
 .message_list_container::-webkit-scrollbar-track {
-    border-radius: 8px;
+  border-radius: 8px;
 }
 
 .message_list_container::-webkit-scrollbar-thumb {
-    border-radius: 8px;
-    background-color: #003a99;
+  border-radius: 8px;
+  background-color: #003a99;
 }
 
 </style>
