@@ -245,11 +245,11 @@ h1 {
   float: left;
   position: relative;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 27px;
+  height: 27px;
   background: #083577;
   opacity: 0.9;
-  padding: 5px;
+  padding: 10px;
   cursor: pointer;
 }
 

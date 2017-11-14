@@ -70,6 +70,11 @@ function setConfigFlagRules() {
                   }
                 }
               },
+              "user-channels": {
+                "$user_id": {
+                	".read": "auth.uid == $user_id && auth != null"
+                }
+              },
               "messages": {
                 ".write" : "auth != null"
               },

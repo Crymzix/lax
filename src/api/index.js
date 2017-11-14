@@ -165,6 +165,30 @@ export function watchChannels (watch, cb) {
   }
 }
 
+export function fetchUserChannels (userId) {
+  return database.ref('/user-channels/' + userId)
+    .once('value')
+    .then(function (snapshot) {
+      return snapshot
+    })
+}
+
+export function watchUserChannels (userId, watch, cb) {
+  const addRef = database.ref('/user-channels/' + userId)
+  const changeRef = database.ref('/user-channels/' + userId)
+  const handler = snapshot => {
+    var channel = snapshot.val()
+    cb(channel)
+  }
+  if (watch) {
+    addRef.on('child_added', handler)
+    changeRef.on('child_changed', handler)
+  } else {
+    addRef.off()
+    changeRef.off()
+  }
+}
+
 export function fetchUsers () {
   return database.ref('users')
     .once('value')
@@ -251,6 +275,7 @@ export function createChannel (name, description, isPrivate, userId, invites) {
     name: name,
     private: isPrivate,
     timestamp: Firebase.database.ServerValue.TIMESTAMP,
+    direct_message: false,
     id: channelKey,
     creator_id: userId,
     invites: invites,

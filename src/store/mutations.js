@@ -23,10 +23,23 @@ export default {
   SET_CHANNEL: (state, { channel }) => {
     Vue.set(state.channels, channel.id, channel)
   },
+  SET_USER_CHANNELS: (state, { userChannels }) => {
+    userChannels.forEach(channel => {
+      var channelValue = channel.val()
+      if (channelValue) {
+        channelValue.id = channel.key
+        Vue.set(state.userChannels, channel.key, channelValue)
+      }
+    })
+  },
+  SET_USER_CHANNEL: (state, { channel }) => {
+    Vue.set(state.userChannels, channel.id, channel)
+  },
   SET_USERS: (state, { users }) => {
     users.forEach(user => {
       var userValue = user.val()
       if (userValue) {
+        userValue.id = user.key
         Vue.set(state.users, user.key, userValue)
       }
     })
@@ -51,5 +64,8 @@ export default {
   },
   SET_CURRENT_CHANNEL: (state, { channelId }) => {
     Vue.set(state.user, 'last_viewed_channel_id', channelId)
+  },
+  SET_CURRENT_USER_CHANNEL: (state, { channelId }) => {
+    state.lastViewedUserChannelId = channelId
   }
 }

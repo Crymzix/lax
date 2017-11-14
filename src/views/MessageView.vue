@@ -2,7 +2,7 @@
   <div class="main">
     <invitemodal v-if="shouldShowInviteModal" v-on:closeInviteModal="showInviteModal(false)"></invitemodal>
     <addchannelmodal v-if="shouldShowAddChannelModal" v-on:closeAddChannelModal="showAddChannelModal(false)"></addchannelmodal>
-    <sidemenu v-on:changedChannelId="changeChannelId" v-on:showAddChannelModal="showAddChannelModal(true)" v-on:showInviteModal="showInviteModal(true)" class="sidemenu"></sidemenu>
+    <sidemenu v-on:changedChannelId="changeChannelId" v-on:userSelected="changeUserChannelId" v-on:showAddChannelModal="showAddChannelModal(true)" v-on:showInviteModal="showInviteModal(true)" class="sidemenu"></sidemenu>
     <div class="right_container">
       <headerbar class="header" :channel-id="currentChannelId"></headerbar>
       <messagelist class="message_list" :channel-id="currentChannelId"></messagelist>
@@ -68,6 +68,10 @@ export default {
       this.currentChannelId = this.$store.state.user.last_viewed_channel_id
       this.fetchMessages()
     },
+    changeUserChannelId: function () {
+      this.currentChannelId = this.$store.state.user.last_viewed_channel_id
+      this.fetchMessages()
+    },
     showInviteModal: function (shouldShow) {
       this.shouldShowInviteModal = shouldShow
     },
@@ -89,7 +93,7 @@ export default {
 
 .sidemenu {
   float: left;
-  width: 250px;
+  width: 220px;
   height: 100vh;
   vertical-align: top;
 }

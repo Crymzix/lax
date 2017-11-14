@@ -3,6 +3,7 @@ import {
   login,
   fetchChannels,
   fetchUsers,
+  fetchUserChannels,
   fetchMessages,
   sendMessage,
   setCurrentChannelId
@@ -24,6 +25,10 @@ export default {
   FETCH_USERS: ({ commit, state }) => {
     return fetchUsers()
       .then(users => commit('SET_USERS', {users}))
+  },
+  FETCH_USER_CHANNELS: ({ commit, state }) => {
+    return fetchUserChannels(state.userId)
+      .then(userChannels => commit('SET_USER_CHANNELS', { userChannels }))
   },
   FETCH_MESSAGES: ({ commit, state }, { channelId }) => {
     return fetchMessages(channelId)
