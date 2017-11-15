@@ -1,6 +1,6 @@
 <template>
   <div class="root">
-    <div class="user_info_container">
+    <div class="user_info_container" v-on:click="showProfile">
       <img class="user_image" :src="user.photo_url" src="~../assets/user.png"/>
       <div class="name_container">
         <h2>{{ team.team_name }}</h2>
@@ -122,7 +122,7 @@ export default {
           }
           message.displayName = displayName
           messageList.push(message)
-          if (i === 9) {
+          if (i === 14) {
             break
           }
           i++
@@ -159,7 +159,7 @@ export default {
           messageList.push(message)
         }
 
-        var userSize = 10 - userChannelsSize
+        var userSize = 15 - userChannelsSize
         let i = 0
         for (let userId in users) {
           let user = users[userId]
@@ -168,7 +168,7 @@ export default {
           message.displayName = user.display_name
           message.isOnline = user.online
           messageList.push(message)
-          if (i === userSize) {
+          if (i === userSize - 1) {
             break
           }
           i++
@@ -254,6 +254,9 @@ export default {
     },
     showInviteModal: function () {
       this.$emit('showInviteModal')
+    },
+    showProfile: function () {
+      this.$emit('showProfile')
     },
     messageName: function (message) {
       //

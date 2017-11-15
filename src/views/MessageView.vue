@@ -3,6 +3,7 @@
     <invitemodal v-if="shouldShowInviteModal" v-on:closeInviteModal="showInviteModal(false)"></invitemodal>
     <addchannelmodal v-if="shouldShowAddChannelModal" v-on:closeAddChannelModal="showAddChannelModal(false)"></addchannelmodal>
     <sidemenu
+      v-on:showProfile="showProfile"
       v-on:changedChannelId="changeChannelId"
       v-on:userSelected="changeUserChannelId"
       v-on:showAddChannelModal="showAddChannelModal(true)"
@@ -26,6 +27,8 @@
       v-on:closeInfoContainer="showInfoContainer(false)"
       v-on:openInfoContainer="showInfoContainer(true)"
       class="side_info_container"
+      :message-id="currentMessageId"
+      :channel-id="currentChannelId"
       :type="infoType"
       :open="shouldShowInfoContainer"
       v-bind:class="{ visible: shouldShowInfoContainer }">
@@ -59,6 +62,7 @@ export default {
   },
   data () {
     return {
+      currentMessageId: this.$store.state.currentMessageId,
       currentChannelId: this.$store.state.user.last_viewed_channel_id,
       shouldShowInviteModal: false,
       shouldShowAddChannelModal: false,
@@ -106,6 +110,10 @@ export default {
     },
     showCommentInput: function () {
       this.infoType = 'comment'
+      this.shouldShowInfoContainer = true
+    },
+    showProfile: function () {
+      this.infoType = 'profile'
       this.shouldShowInfoContainer = true
     },
     showInfoContainer: function (show) {

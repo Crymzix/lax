@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <div class="header">
+      <h1 class="heading">{{ infoTitle }}</h1>
       <div
         class="side_menu"
         v-bind:class="{ open: open}"
@@ -11,11 +12,16 @@
       </div>
     </div>
     <div class="content">
+      <component
+        v-bind:is="infoView">
+      </component>
     </div>
   </div>
 </template>
 
 <script>
+import AddComment from '../components/AddComment.vue'
+import Profile from '../components/Profile.vue'
 
 export default {
   name: 'sideinfocontainer',
@@ -23,7 +29,26 @@ export default {
   data () {
     return {
       isOpen: this.open,
-      messageId: this.$store.state.currentMessageId
+      infoTitle: '',
+      infoView: null,
+      currentMessageId: this.$store.state.currentMessageId,
+      currentChannelId: this.$store.state.user.last_viewed_channel_id
+    }
+  },
+  watch: {
+    type: function (newType) {
+      switch (newType) {
+        case 'comment':
+          this.infoTitle = 'Add Comment'
+          this.infoView = AddComment
+          break
+        case 'profile':
+          this.infoTitle = 'Profile'
+          this.infoView = Profile
+          break
+        default:
+          this.infoTitle = ''
+      }
     }
   },
   methods: {
@@ -43,6 +68,22 @@ export default {
 <style scoped>
 .container {
   background: white;
+}
+
+.content {
+
+}
+
+.heading {
+  position: absolute;
+  font-size: 20px;
+  margin-top: 22px;
+  margin-bottom: 25px;
+  margin-left: 15px;
+  padding: 0;
+  color: #0352c7;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
 }
 
 .side_menu {
