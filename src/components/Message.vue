@@ -7,9 +7,15 @@
       <div>
         <h1 class="username">{{ message.name }}</h1>
         <span class="timestamp">{{ timestamp }}</span>
-        <div class="options">
+        <div v-if="message.user_id !== 'lax_bot'" class="options">
           <img v-tooltip.top-center="'React'"class="options_icon" :src="reactIcon" @mouseover="reactHover" @mouseleave="reactHover"/>
-          <img v-tooltip.top-center="'Comment'"class="options_icon" v-on:click="comment(message)" :src="commentIcon" @mouseover="commentHover" @mouseleave="commentHover" />
+          <img
+            v-tooltip.top-center="'Comment'"
+            class="options_icon"
+            v-on:click="comment(message)"
+            :src="commentIcon"
+            @mouseover="commentHover"
+            @mouseleave="commentHover"/>
         </div>
       </div>
       <p class="message" v-html="formattedMessage"></p>

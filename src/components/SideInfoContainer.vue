@@ -13,6 +13,7 @@
     </div>
     <div class="content">
       <component
+        :key="currentMessageId"
         v-bind:is="infoView">
       </component>
     </div>
@@ -25,7 +26,7 @@ import Profile from '../components/Profile.vue'
 
 export default {
   name: 'sideinfocontainer',
-  props: ['type', 'open'],
+  props: ['type', 'open', 'messageId'],
   data () {
     return {
       isOpen: this.open,
